@@ -1,0 +1,25 @@
+Tool specifications
+
+Two tools shall be developed, which together allow the user to gather data about the extensions of a set of argumentation frameworks. 
+
+The first and central tool uses an argumentation framework and precomputed extensions and returns a list of properties. The command line options are as follows:
+
+./analyze [-t] [-c] [-s SEMANTIC] -f FRAMEWORK -e EXTENSIONS 
+
+The command line parameter '-t' specifies, that the framework is in Trivial Graph Format (TGF) instead of the default Aspartix Format (APX). The command line parameter '-c' specifies, that the extensions are given in the output formate according to the ICCMA competition rules. For an exact definition see [1]. If this parameter is not given, the file given for EXTENSIONS is assumed to be the output log of clasp. Naturally this would be the case if the extensions are computed by using Aspartix. Finally the optional parameter '-s' allows the user to specified which semantic was used to compute the extensions. SEMANTIC is either one of: 'adm', 'nai', 'stb', 'prf', 'stg', or 'sem'. This parameter is optional. If omitted the output of analyze does not contain those properties which need knowledge of the semantic in use. The parameters '-f' and '-e' denote the files containing the framework and the computed extensions. 
+
+The output of analyze contains one keyword, property pair per line. The property is separated from the keyword with a tabulator character. To aid readability the keyword might be a string containing multiple words separated by spaces. 
+At least following properties will be returned: 
+	-Rejected Arguments	a comma separated list of rejected arguments.
+	-Implicit Conflicts     a list of tuple of the form "(A,B)" where A and B are arguments.
+				Only one of "(A,B)" or "(B,A)" might appear in the list.
+	-Possible Semantics	A list of semantics (given as three letter strings as for the command line argument '-s') whose signature contains the given set of extensions. This output is omitted if the parameter '-s' is not given.
+
+The second tool calls clasp and analyze on a set of frameworks to first compute extensions and to subsequently collect statistics about the extensions. 
+
+./statistics -a APX_DIR -f FRAMEWORK_DIR [-s SEMANTICS] OUTFILE
+
+APX_DIR is a directory containing the Aspartix ASP encodings and FRAMEWORK_DIR should contain the argumentation frameworks in APX format whose extensions should be computed. SEMANTICS is a list of thee letter strings denoting the semantics for which extensions should be computed. If this argument is omitted extensions for all supported semantics are computed. Finally OUTFILE denotes the filename of the resulting CSV file. 
+For each selected semantic the CSV file contains two columns: First the number of rejected arguments and subsequently the number of implicit conflicts. The CSV file might contain a number of additional columns containing general information about the framework (such as file name and number of arguments).
+
+[1] http://argumentationcompetition.org/2015/rules.html
