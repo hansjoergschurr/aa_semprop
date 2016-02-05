@@ -32,8 +32,8 @@ apxParseLine f@(Framework args attacks) str =
 readApx ∷ [B.ByteString] → Framework
 readApx = foldl apxParseLine (Framework S.empty M.empty)
 
-tgfArg = B.pack "([0-9]+).*$"
-tgfAtt = B.pack "([0-9]+)[ \\t]+([0-9]+).*$"
+tgfArg = B.pack "^[ \\t]*([0-9]+).*$"
+tgfAtt = B.pack "^[ \\t]*([0-9]+)[ \\t]+([0-9]+).*$"
 tgfSep = B.pack "#"
 data  TgfState = Arguments | Attacks
 
