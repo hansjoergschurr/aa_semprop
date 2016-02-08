@@ -1,9 +1,11 @@
-import Frameworks
 import qualified Data.ByteString.Lazy.Char8 as B
 import System.IO
 import System.Environment
 import System.Console.GetOpt
 import System.Exit
+
+import Frameworks
+import Extensions
 
 data Flag = Tgf | Iccma | Framework String | Extensions String
     deriving (Eq,Ord,Show)
@@ -32,6 +34,12 @@ onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
   exitWith (ExitFailure 1)
 
+readFromFile ∷ Show a ⇒ String → ([B.ByteString] → a) → IO a
+readFromFile path parser = do
+  handle ← openFile path ReadMode
+  content ← B.hGetContents handle
+  return $ (parser.B.lines) content
+
 main ∷ IO ()
 main = do
   args ← getArgs
@@ -39,10 +47,13 @@ main = do
     (args,_,[]) →
         case (getFrameworkPath args, getExstensionsPath args) of
           (Just framework, Just extensions) → do
-            handle ← openFile framework ReadMode
-            content ←  B.hGetContents handle
-            let parser = if Tgf `elem` args then readTgf else readApx
-            let framework = parser $ B.lines content
+            let fParser = if Tgf `elem` args then readTgf else readApx
+            let eParser = if Iccma `elem` args then readIccma else readClasp
+
+            framework ← readFromFile framework fParser
+            extensions ← readFromFile extensions eParser
+
             print framework
+            print extensions
           _ → onErr []
     (_,_,errs) → onErr errs

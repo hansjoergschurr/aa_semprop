@@ -1,0 +1,12 @@
+clasp version 2.1.4
+Reading from stdin
+Solving...
+Answer: 1
+arg(a1) arg(a2) arg(a3) att(a1,a2) att(a1,a3) att(a2,a3) defeat(a1,a2) defeat(a1,a3) defeat(a2,a3) in(a1) out(a2) out(a3) defeated(a2) defeated(a3) not_defended(a2) not_defended(a3)
+Answer: 2
+arg(a1) arg(a2) arg(a3) att(a1,a2) att(a1,a3) att(a2,a3) defeat(a1,a2) defeat(a1,a3) defeat(a2,a3) out(a1) out(a2) out(a3) not_defended(a2) not_defended(a3)
+SATISFIABLE
+
+Models      : 2     
+Time        : 0.001s (Solving: 0.00s 1st Model: 0.00s Unsat: 0.00s)
+CPU Time    : 0.000s
