@@ -6,28 +6,29 @@ import System.Exit
 
 import Frameworks
 import Extensions
+import Semantics
 
-data Flag = Tgf | Iccma | Framework String | Extensions String
+data Flag = FTgf | FIccma | FFramework String | FExtensions String
     deriving (Eq,Ord,Show)
 
-flags = [Option ['t'] [] (NoArg Tgf)
+flags = [Option ['t'] [] (NoArg FTgf)
             "The framework is in Trivial Graph Format, instead of Aspartix Format.",
-         Option ['c'] [] (NoArg Iccma)
+         Option ['c'] [] (NoArg FIccma)
             (unlines ["The exstensions are in ICCMA competiton format, instead of an output log of clasp.",
              "a theorem iff the QBF formular is false."]),
-         Option ['f'] [] (ReqArg Framework "FILE")
+         Option ['f'] [] (ReqArg FFramework "FILE")
             "FILE containing the framework.",
-         Option ['e'] [] (ReqArg Extensions "FILE")
+         Option ['e'] [] (ReqArg FExtensions "FILE")
             "FILE containing the extensions."]
 
 header = "Usage: analyze [-t] [-c] -f FILE -e FILE\n"
 
 getFrameworkPath [] = Nothing
-getFrameworkPath (Framework s:_) = Just s
+getFrameworkPath (FFramework s:_) = Just s
 getFrameworkPath (_:xs) = getFrameworkPath xs
 
 getExstensionsPath [] = Nothing
-getExstensionsPath (Extensions s:_) = Just s
+getExstensionsPath (FExtensions s:_) = Just s
 getExstensionsPath (_:xs) = getExstensionsPath xs
 
 onErr e = do
@@ -47,11 +48,16 @@ main = do
     (args,_,[]) →
         case (getFrameworkPath args, getExstensionsPath args) of
           (Just framework, Just extensions) → do
-            let fParser = if Tgf `elem` args then readTgf else readApx
-            let eParser = if Iccma `elem` args then readIccma else readClasp
+            let fParser = if FTgf `elem` args then readTgf else readApx
+            let eParser = if FIccma `elem` args then readIccma else readClasp
 
             framework ← readFromFile framework fParser
             extensions ← readFromFile extensions eParser
+
+            putStrLn $ "Arguments\t" ++ show (numArguments framework extensions)
+            putStrLn $ "Extensions\t" ++ show (numExtensions framework extensions)
+            putStrLn $ "Rejected Arguments\t" ++ show (rejectedArguments framework extensions)
+            putStrLn $ "Implicit Conflicts\t" ++ show (implicitConflicts framework extensions)
 
             print framework
             print extensions

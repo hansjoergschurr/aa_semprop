@@ -1,4 +1,4 @@
-module Frameworks (Argument, Framework, readApx, readTgf) where
+module Frameworks (Argument, Framework(..), readApx, readTgf) where
 
 import qualified Data.Set as S
 import qualified Data.Map.Strict as M
