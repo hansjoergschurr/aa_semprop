@@ -54,10 +54,7 @@ main = do
             framework ← readFromFile framework fParser
             extensions ← readFromFile extensions eParser
 
-            putStrLn $ "Arguments\t" ++ show (numArguments framework extensions)
-            putStrLn $ "Extensions\t" ++ show (numExtensions framework extensions)
-            putStrLn $ "Rejected Arguments\t" ++ show (rejectedArguments framework extensions)
-            putStrLn $ "Implicit Conflicts\t" ++ show (implicitConflicts framework extensions)
+            outputSemanticProperties framework extensions
 
             print framework
             print extensions

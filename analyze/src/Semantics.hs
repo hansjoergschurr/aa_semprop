@@ -1,9 +1,10 @@
-module Semantics(rejectedArguments, implicitConflicts, numArguments, numExtensions) where
+module Semantics(outputSemanticProperties) where
 
 import Extensions
 import Frameworks
 
 import Data.Set hiding (map)
+import qualified Data.List as L
 import qualified Data.Map.Strict as M
 
 import qualified Data.ByteString.Lazy.Char8 as B
@@ -35,3 +36,28 @@ numArguments (Framework args _) _ = length args
 
 numExtensions∷ Framework → Extensions → Int
 numExtensions _ (Extensions e) = length e
+
+-- output and pretty printing
+
+class PrettyOut a where
+  pretty ∷ a → String
+
+-- this is all very inefficient
+instance PrettyOut Int where
+  pretty = show
+instance PrettyOut B.ByteString where
+  pretty = B.unpack
+instance PrettyOut a ⇒ PrettyOut (Set a) where
+  pretty s = concat.(L.intersperse ",") $ map pretty (toList s)
+instance (PrettyOut a,PrettyOut b) ⇒ PrettyOut (a,b) where
+  pretty (x,y) = "("++(pretty x)++","++(pretty y)++")"
+
+
+outputSemanticProperties f e = do
+  outputLine f e "Arguments" numArguments
+  outputLine f e "Extensions" numExtensions
+  outputLine f e "Rejected Arguments" rejectedArguments
+  outputLine f e "Implicit Conflicts" implicitConflicts
+
+outputLine ∷ PrettyOut a => Framework → Extensions → String → (Framework → Extensions → a) → IO  ()
+outputLine f e n s = putStrLn $ n ++ "\t" ++ pretty (s f e)
