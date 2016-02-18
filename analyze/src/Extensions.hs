@@ -6,7 +6,7 @@ import Text.Regex.Posix
 
 import Frameworks (Argument)
 
-data Extensions = Extensions [S.Set Argument]
+data Extensions = Extensions (S.Set (S.Set Argument))
   deriving Show
 
 -- The ICCMA format describes extensions as list of lists:
@@ -18,7 +18,7 @@ readIccma ∷ [B.ByteString] → Extensions
 readIccma (l:_) = let
       extStrs = map (!! 1) (l =~ iccmaExtension ∷ [[B.ByteString]])
     in
-      Extensions $ map (S.fromList.B.split ',') extStrs
+      Extensions . S.fromList $ map (S.fromList.B.split ',') extStrs
 
 -- clasp log.
 claspAnswerStart = B.pack "^Answer:" -- line just before an answer line
@@ -33,4 +33,4 @@ readClasp' (l1:l2:ls)
 readClasp' _ = []
 
 readClasp ∷ [B.ByteString] → Extensions
-readClasp l = Extensions $ readClasp' l
+readClasp l = Extensions . S.fromList $ readClasp' l
