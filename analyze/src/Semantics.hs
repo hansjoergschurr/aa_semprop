@@ -6,14 +6,15 @@ import Frameworks
 import qualified Data.Set as S
 import qualified Data.List as L
 import qualified Data.Map.Strict as M
+import Data.Maybe (mapMaybe)
 
 import qualified Data.ByteString.Lazy.Char8 as B
 
 unionAll ∷ (Ord a) ⇒ S.Set (S.Set a) → S.Set a
 unionAll = S.fold S.union S.empty
 
-rejectedArguments ∷ Framework → Extensions → S.Set Argument
-rejectedArguments (Framework args _) (Extensions exts) =
+collectRejectedArgs ∷ Framework → Extensions → S.Set Argument
+collectRejectedArgs (Framework args _) (Extensions exts) =
   args S.\\ unionAll exts
 
 unsortedPairs ∷ Ord a ⇒ S.Set a → S.Set (a,a)
@@ -45,13 +46,13 @@ srt a b
 srtt ∷ Ord a ⇒ (a,a) → (a,a)
 srtt = uncurry srt
 
-downwardsClosed ∷ Framework → Extensions → Bool
-downwardsClosed _ (Extensions e) =  e /= closure
-  where
-    closure = unionAll $ S.map powerSet e
+closure = unionAll . S.map powerSet
 
-tight ∷ Framework → Extensions → Bool
-tight _ (Extensions e) = forAll noConflict e
+isDownwardsClosed ∷ Extensions → Bool
+isDownwardsClosed (Extensions e) =  e /= closure e
+
+isTight ∷ Extensions → Bool
+isTight (Extensions e) = forAll noConflict e
   where
     pairs = unionAll $ S.map unsortedPairs e
     isConflict a = any (\s→S.notMember (srt s a) pairs)
@@ -59,16 +60,22 @@ tight _ (Extensions e) = forAll noConflict e
     args = unionAll e
     noConflict s = forAll (checkConflict s) args
 
-implicitConflicts ∷ Framework → Extensions → S.Set (Argument, Argument)
-implicitConflicts (Framework args atcs) (Extensions exts) =
+collectImplicitConflicts ∷ Framework → Extensions → S.Set (Argument, Argument)
+collectImplicitConflicts (Framework args atcs) (Extensions exts) =
     allP S.\\ expl S.\\ inExt
   where
     allP = unsortedPairs args
     expl = S.fromList [srt k b | (k,v) ← M.toList atcs, b ← v]
     inExt = unionAll $ S.map unsortedPairs exts
 
-conflictSensitive ∷ Framework → Extensions → Bool
-conflictSensitive _ (Extensions e) = forAll (\a→forAll (cond a) e) e
+isIncomparable ∷ Extensions → Bool
+isIncomparable (Extensions e) = forAll compA e
+  where
+    compA a = forAll (comp a) e
+    comp a b = not (a `S.isSubsetOf` b || b `S.isSubsetOf` a)
+
+isConflictSensitive ∷ Extensions → Bool
+isConflictSensitive (Extensions e) = forAll (\a→forAll (cond a) e) e
     where
       pairs = unionAll $ S.map unsortedPairs e
       cond a b = (c `S.member` e) || conf c
@@ -76,20 +83,50 @@ conflictSensitive _ (Extensions e) = forAll (\a→forAll (cond a) e) e
       conf c = exists (\a→exists (\b→srt a b `S.notMember` pairs) c) c
 
 
-numArguments ∷ Framework → Extensions → Int
-numArguments (Framework args _) _ = length args
+numArguments ∷ Framework → Int
+numArguments (Framework args _) = length args
 
-numExtensions∷ Framework → Extensions → Int
-numExtensions _ (Extensions e) = length e
+numExtensions∷ Extensions → Int
+numExtensions (Extensions e) = length e
+
+data SemanticProperties = SemanticProperties {
+  arguments ∷ Int,
+  extensions ∷ Int,
+  rejectedArguments ∷ S.Set Argument,
+  implicitConflicts ∷ S.Set (Argument, Argument),
+  hasExtensions ∷ Bool,
+  emptyExtension ∷ Bool,
+  incomparable ∷ Bool,
+  downwardsClosed ∷ Bool,
+  tight ∷ Bool,
+  closureIsTight ∷ Bool,
+  conflictSensitive ∷ Bool}
+
+inSignatures ∷ SemanticProperties → StringList
+inSignatures sp = StringList $ mapMaybe c
+    [(cf,"cof"),(naive,"nai"),(stb,"stb"),(stage,"stg"),(adm,"adm"),(pref,"prf"),(sem,"sem")]
+  where
+    a <&> b = \x→a x && b x
+    c (f, s) = if f sp then Just s else Nothing
+    cf = hasExtensions <&> downwardsClosed <&> tight
+    naive = hasExtensions <&> incomparable <&> closureIsTight
+    stb = incomparable <&> tight
+    stage = hasExtensions <&> stb
+    adm = hasExtensions <&> conflictSensitive <&> emptyExtension
+    pref = hasExtensions <&> incomparable <&> conflictSensitive
+    sem = pref
 
 -- output and pretty printing
-
 class PrettyOut a where
   pretty ∷ a → String
 
 -- this is all very inefficient
+newtype StringList = StringList [String]
+
 instance PrettyOut Int where
   pretty = show
+instance PrettyOut StringList where
+  pretty (StringList s) = L.intercalate "," s
 instance PrettyOut Bool where
   pretty = show
 instance PrettyOut B.ByteString where
@@ -99,16 +136,29 @@ instance PrettyOut a ⇒ PrettyOut (S.Set a) where
 instance (PrettyOut a,PrettyOut b) ⇒ PrettyOut (a,b) where
   pretty (x,y) = "("++pretty x++","++pretty y++")"
 
+semanticProperties f e = SemanticProperties {
+  arguments = numArguments f,
+  extensions = numExtensions e,
+  rejectedArguments = collectRejectedArgs f e,
+  implicitConflicts = collectImplicitConflicts f e,
+  hasExtensions = (\(Extensions s)→ not $ S.null s) e,
+  emptyExtension = (\(Extensions s)→ S.member S.empty s) e,
+  incomparable = isIncomparable e,
+  downwardsClosed = isDownwardsClosed e,
+  tight = isTight e,
+  closureIsTight = isTight $ (\(Extensions s) → Extensions (closure s)) e,
+  conflictSensitive = isConflictSensitive e}
 
 outputSemanticProperties f e = do
-  outputLine f e "Arguments" numArguments
-  outputLine f e "Extensions" numExtensions
-  outputLine f e "Rejected Arguments" rejectedArguments
-  outputLine f e "Implicit Conflicts" implicitConflicts
-  outputLine f e "Implicit Conflicts" implicitConflicts
-  outputLine f e "Downwards Closed" downwardsClosed
-  outputLine f e "Tight" tight
-  outputLine f e "Conflict Sensitive" conflictSensitive
+  let sp = semanticProperties f e
+  outputLine "Arguments" $ arguments sp
+  outputLine "Extensions" $ extensions sp
+  outputLine "Rejected Arguments" $ rejectedArguments sp
+  outputLine "Implicit Conflicts" $ implicitConflicts sp
+  outputLine "Downwards Closed" $ downwardsClosed sp
+  outputLine "Tight" $ tight sp
+  outputLine "Conflict Sensitive" $ conflictSensitive sp
+  outputLine "In Signatures Of" $ inSignatures sp
 
-outputLine ∷ PrettyOut a => Framework → Extensions → String → (Framework → Extensions → a) → IO  ()
-outputLine f e n s = putStrLn $ n ++ "\t" ++ pretty (s f e)
+outputLine ∷ PrettyOut a => String → a → IO  ()
+outputLine m n = putStrLn $ m ++ "\t" ++ pretty n
