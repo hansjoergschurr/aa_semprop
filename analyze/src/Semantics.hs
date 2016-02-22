@@ -150,6 +150,7 @@ semanticProperties f e = SemanticProperties {
   conflictSensitive = isConflictSensitive e}
 
 outputSemanticProperties f e = do
+  -- TODO: add basic sanity checks
   let sp = semanticProperties f e
   outputLine "Arguments" $ arguments sp
   outputLine "Extensions" $ extensions sp
