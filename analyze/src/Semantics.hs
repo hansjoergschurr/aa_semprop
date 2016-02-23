@@ -1,4 +1,4 @@
-module Semantics(outputSemanticProperties) where
+module Semantics(outputSemanticProperties, sanityCheck) where
 
 import Extensions
 import Frameworks
@@ -163,3 +163,9 @@ outputSemanticProperties f e = do
 
 outputLine ∷ PrettyOut a => String → a → IO  ()
 outputLine m n = putStrLn $ m ++ "\t" ++ pretty n
+
+sanityCheck ∷ Framework → Extensions → Maybe String
+sanityCheck (Framework a atk) (Extensions e) 
+  | S.null a = Just "Empty framework."
+  | not (unionAll e `S.isSubsetOf` a) = Just "Additional arguments in extensions."
+  | otherwise = Nothing

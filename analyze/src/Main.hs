@@ -54,9 +54,10 @@ main = do
             framework ← readFromFile framework fParser
             extensions ← readFromFile extensions eParser
 
-            outputSemanticProperties framework extensions
-
-            print framework
-            print extensions
+            case sanityCheck framework extensions of
+              Just s → do
+                hPutStrLn stderr ("Error: "++s)
+                exitWith (ExitFailure 1)
+              Nothing → outputSemanticProperties framework extensions
           _ → onErr []
     (_,_,errs) → onErr errs
