@@ -150,7 +150,6 @@ semanticProperties f e = SemanticProperties {
   conflictSensitive = isConflictSensitive e}
 
 outputSemanticProperties f e = do
-  -- TODO: add basic sanity checks
   let sp = semanticProperties f e
   outputLine "Arguments" $ arguments sp
   outputLine "Extensions" $ extensions sp
@@ -165,7 +164,7 @@ outputLine ∷ PrettyOut a => String → a → IO  ()
 outputLine m n = putStrLn $ m ++ "\t" ++ pretty n
 
 sanityCheck ∷ Framework → Extensions → Maybe String
-sanityCheck (Framework a atk) (Extensions e) 
+sanityCheck (Framework a atk) (Extensions e)
   | S.null a = Just "Empty framework."
   | not (unionAll e `S.isSubsetOf` a) = Just "Additional arguments in extensions."
   | otherwise = Nothing
