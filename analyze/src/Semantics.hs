@@ -149,16 +149,30 @@ semanticProperties f e = SemanticProperties {
   closureIsTight = isTight $ (\(Extensions s) → Extensions (closure s)) e,
   conflictSensitive = isConflictSensitive e}
 
-outputSemanticProperties f e = do
+filiterConflictByArguments ∷  S.Set Argument → S.Set (Argument, Argument) → S.Set (Argument, Argument)
+filiterConflictByArguments c = S.filter f
+  where f (a,b) = not (a `S.member` c || b `S.member` c)
+
+outLists False sp = do
+  outputLine "Rejected Arguments" $ rejectedArguments sp
+  outputLine "Implicit Conflicts" $ implicitConflicts sp
+  outputLine "Implicit Conflicts not Rejected" $
+    filiterConflictByArguments (rejectedArguments sp) (implicitConflicts sp)
+outLists True sp = do
+  outputLine "Rejected Arguments" $ S.size (rejectedArguments sp)
+  outputLine "Implicit Conflicts" $ S.size (implicitConflicts sp)
+  outputLine "Implicit Conflicts not Rejected" $
+    S.size (filiterConflictByArguments (rejectedArguments sp) (implicitConflicts sp))
+
+outputSemanticProperties n f e = do
   let sp = semanticProperties f e
   outputLine "Arguments" $ arguments sp
   outputLine "Extensions" $ extensions sp
-  outputLine "Rejected Arguments" $ rejectedArguments sp
-  outputLine "Implicit Conflicts" $ implicitConflicts sp
   outputLine "Downwards Closed" $ downwardsClosed sp
   outputLine "Tight" $ tight sp
   outputLine "Conflict Sensitive" $ conflictSensitive sp
   outputLine "In Signatures Of" $ inSignatures sp
+  outLists n sp
 
 outputLine ∷ PrettyOut a => String → a → IO  ()
 outputLine m n = putStrLn $ m ++ "\t" ++ pretty n

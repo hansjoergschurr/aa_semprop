@@ -8,7 +8,7 @@ import Frameworks
 import Extensions
 import Semantics
 
-data Flag = FTgf | FIccma | FFramework String | FExtensions String
+data Flag = FTgf | FIccma | FNumeric | FFramework String | FExtensions String
     deriving (Eq,Ord,Show)
 
 flags = [Option ['t'] [] (NoArg FTgf)
@@ -16,12 +16,14 @@ flags = [Option ['t'] [] (NoArg FTgf)
          Option ['c'] [] (NoArg FIccma)
             (unlines ["The exstensions are in ICCMA competiton format, instead of an output log of clasp.",
              "a theorem iff the QBF formular is false."]),
+         Option ['n'] [] (NoArg FNumeric)
+            "Output the number of elements instead of lists e.g. for implicit conflicts.",
          Option ['f'] [] (ReqArg FFramework "FILE")
             "FILE containing the framework.",
          Option ['e'] [] (ReqArg FExtensions "FILE")
             "FILE containing the extensions."]
 
-header = "Usage: analyze [-t] [-c] -f FILE -e FILE\n"
+header = "Usage: analyze [-t] [-c] [-n] -f FILE -e FILE\n"
 
 getFrameworkPath [] = Nothing
 getFrameworkPath (FFramework s:_) = Just s
@@ -48,6 +50,7 @@ main = do
     (args,_,[]) →
         case (getFrameworkPath args, getExstensionsPath args) of
           (Just framework, Just extensions) → do
+            let numericOut = FNumeric `elem` args
             let fParser = if FTgf `elem` args then readTgf else readApx
             let eParser = if FIccma `elem` args then readIccma else readClasp
 
@@ -58,6 +61,6 @@ main = do
               Just s → do
                 hPutStrLn stderr ("Error: "++s)
                 exitWith (ExitFailure 1)
-              Nothing → outputSemanticProperties framework extensions
+              Nothing → outputSemanticProperties numericOut framework extensions
           _ → onErr []
     (_,_,errs) → onErr errs
