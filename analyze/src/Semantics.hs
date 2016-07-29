@@ -7,6 +7,7 @@ import qualified Data.Set as S
 import qualified Data.List as L
 import qualified Data.Map.Strict as M
 import Data.Maybe (mapMaybe)
+import Control.Applicative (liftA2)
 
 import qualified Data.ByteString.Lazy.Char8 as B
 
@@ -82,7 +83,6 @@ isConflictSensitive (Extensions e) = forAll (\a→forAll (cond a) e) e
         where c = a `S.union` b
       conf c = exists (\a→exists (\b→srt a b `S.notMember` pairs) c) c
 
-
 numArguments ∷ Framework → Int
 numArguments (Framework args _) = length args
 
@@ -106,7 +106,7 @@ inSignatures ∷ SemanticProperties → StringList
 inSignatures sp = StringList $ mapMaybe c
     [(cf,"cof"),(naive,"nai"),(stb,"stb"),(stage,"stg"),(adm,"adm"),(pref,"prf"),(sem,"sem")]
   where
-    a <&> b = \x→a x && b x
+    (<&>)  = liftA2 (&&)
     c (f, s) = if f sp then Just s else Nothing
     cf = hasExtensions <&> downwardsClosed <&> tight
     naive = hasExtensions <&> incomparable <&> closureIsTight

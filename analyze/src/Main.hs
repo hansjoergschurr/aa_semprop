@@ -14,7 +14,7 @@ data Flag = FTgf | FIccma | FNumeric | FFramework String | FExtensions String
 flags = [Option ['t'] [] (NoArg FTgf)
             "The framework is in Trivial Graph Format, instead of Aspartix Format.",
          Option ['c'] [] (NoArg FIccma)
-            (unlines ["The exstensions are in ICCMA competiton format, instead of an output log of clasp.",
+            (unlines ["The Extensions are in ICCMA competiton format, instead of an output log of clasp.",
              "a theorem iff the QBF formular is false."]),
          Option ['n'] [] (NoArg FNumeric)
             "Output the number of elements instead of lists e.g. for implicit conflicts.",
@@ -29,9 +29,9 @@ getFrameworkPath [] = Nothing
 getFrameworkPath (FFramework s:_) = Just s
 getFrameworkPath (_:xs) = getFrameworkPath xs
 
-getExstensionsPath [] = Nothing
-getExstensionsPath (FExtensions s:_) = Just s
-getExstensionsPath (_:xs) = getExstensionsPath xs
+getExtensionsPath [] = Nothing
+getExtensionsPath (FExtensions s:_) = Just s
+getExtensionsPath (_:xs) = getExtensionsPath xs
 
 onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
@@ -48,7 +48,7 @@ main = do
   args ← getArgs
   case getOpt Permute flags args of
     (args,_,[]) →
-        case (getFrameworkPath args, getExstensionsPath args) of
+        case (getFrameworkPath args, getExtensionsPath args) of
           (Just framework, Just extensions) → do
             let numericOut = FNumeric `elem` args
             let fParser = if FTgf `elem` args then readTgf else readApx
