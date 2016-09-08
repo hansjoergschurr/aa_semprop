@@ -28,7 +28,7 @@ getApxDirPath [] = Nothing
 getApxDirPath (FApxDir s:_) = Just $ T.pack s
 getApxDirPath (_:xs) = getApxDirPath xs
 
-allSemantics = ["adm", "nai", "stb", "prf", "stg", "sem"]
+allSemantics = ["adm", "stb", "prf", "stg", "sem"] -- "nai",
 
 getSemantics [] = allSemantics
 getSemantics (FSemantics (Just []):_) = allSemantics
@@ -40,11 +40,10 @@ onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
   exitWith (ExitFailure 1)
 
-readFromFile ∷ Show a ⇒ String → ([B.ByteString] → a) → IO a
-readFromFile path parser = do
-  handle ← openFile path ReadMode
-  content ← B.hGetContents handle
-  return $ (parser.B.lines) content
+findExtensions f_dir sem_dir frame sem = sub $ escaping False $ run_ c []
+  where
+    c = T.intercalcate " " ["clingo", f, s
+
 
 main ∷ IO ()
 main = do
