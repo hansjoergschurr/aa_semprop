@@ -3,9 +3,11 @@ import System.Environment
 import System.Console.GetOpt
 import System.Exit
 import Data.List
-import Shelly
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy.Char8 as B
+import Text.Printf(printf)
+
+import Shelly
 
 data Flag = FApxDir String | FFramework String | FSemantics (Maybe String)
     deriving (Eq,Ord,Show)
@@ -40,10 +42,12 @@ onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
   exitWith (ExitFailure 1)
 
-findExtensions f_dir sem_dir frame sem = sub $ escaping False $ run_ c []
+findExtensions f_dir sem_dir frame sem = sub $ escaping False $ run_ (fromText c) []
   where
-    c = T.intercalcate " " ["clingo", f, s
-
+    f = T.unpack $ f_dir frame
+    s = T.unpack $ sem_dir sem
+    l = T.unpack $ T.intercalate "_" [frame, sem, "log"]
+    c = T.pack $ printf "clingo  0 %s %s >> %s" f s l
 
 main ∷ IO ()
 main = do
