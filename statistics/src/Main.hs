@@ -3,9 +3,11 @@ import System.Environment
 import System.Console.GetOpt
 import System.Exit
 import Data.List
-import Shelly
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy.Char8 as B
+import Text.Printf(printf)
+
+import Shelly
 
 data Flag = FApxDir String | FFramework String | FSemantics (Maybe String)
     deriving (Eq,Ord,Show)
@@ -40,10 +42,26 @@ onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
   exitWith (ExitFailure 1)
 
-findExtensions f_dir sem_dir frame sem = sub $ escaping False $ run_ c []
+semDir dir sem = dir </> s sem
   where
-    c = T.intercalcate " " ["clingo", f, s
+    s :: T.Text -> T.Text
+    s "adm" = "adm.dl"
+    s "stb" = "stable.dl"
+    s "prf" = "prefex_gringo.lp"
+    s "stg" = "stage_gringo.lp"
+    s "sem" = "semi_stable_gringo.lp"
 
+findExtensions :: (T.Text -> Shelly.FilePath) -> T.Text -> Shelly.FilePath -> Sh ()
+findExtensions semDir sem frame = sub $ escaping False $ do
+    dir <- cmd "dirname" [l]
+    cmd "mkdir" ["-p", dir]
+    run_ (fromText c) []
+  where
+    up = T.unpack.toTextIgnore
+    f = up frame
+    s = up $ semDir sem
+    l = T.unpack $ T.append "out/" $ T.intercalate "_" [toTextIgnore frame, sem, "log"]
+    c = T.pack $ printf "clingo  0 %s %s >> %s" f s l
 
 main ∷ IO ()
 main = do
@@ -54,9 +72,12 @@ main = do
         case (getFrameworkPath args, getApxDirPath args) of
           (Just framework, Just extensions) → do
             let semantics = getSemantics args
-            shelly $ verbosely $ do
+            shelly $ verbosely $ errExit False $ do
               echo $ T.append "Framwork path: " framework
-              echo $ T.append "Aspartix path: " framework
+              echo $ T.append "Aspartix path: " extensions
               echo $ T.append "Using semantics: " $ T.intercalate ", " semantics
+
+              frames <- findWhen (return.hasExt "apx") $ fromText framework
+              sequence_ [findExtensions (semDir extensions) s f | s <- semantics, f <- frames]
           _ → onErr []
     (_,_,errs) → onErr errs
