@@ -4,6 +4,7 @@ import System.Console.GetOpt
 import System.Exit
 import Data.List
 import Control.Monad
+import Control.Applicative
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy.Char8 as B
 import Text.Printf(printf)
@@ -52,8 +53,8 @@ semDir dir sem = dir </> s sem
     s "stg" = "stage_gringo.lp"
     s "sem" = "semi_stable_gringo.lp"
 
-findExtensions :: (T.Text -> Shelly.FilePath) -> T.Text -> Shelly.FilePath -> Sh T.Text
-findExtensions semDir sem frame = sub $ escaping False $ do
+findExtensions :: (T.Text -> Shelly.FilePath) -> Shelly.FilePath -> T.Text -> Sh T.Text
+findExtensions semDir frame sem = sub $ escaping False $ do
     dir <- cmd "dirname" [outfile]
     cmd "mkdir" ["-p", dir]
     run_ (fromText c) []
@@ -65,10 +66,10 @@ findExtensions semDir sem frame = sub $ escaping False $ do
     outfile = T.append "out/" $ T.intercalate "_" [toTextIgnore frame, sem, "log"]
     c = T.pack $ printf "clingo  0 %s %s >> %s" f s (T.unpack outfile)
 
-generateStatistics :: Sh T.Text -> Sh ()
-generateStatistics ext = do
-  e <- ext
-  echo e
+generateStatistics :: Shelly.FilePath -> [T.Text] -> (T.Text -> Sh T.Text)-> Sh ()
+generateStatistics outfile sems extF = do
+  logs <- sequence $ extF <$> sems
+  echo "foo"
 
 main ∷ IO ()
 main = do
@@ -85,7 +86,7 @@ main = do
               echo $ T.append "Using semantics: " $ T.intercalate ", " semantics
 
               frames <- findWhen (return.hasExt "apx") $ fromText framework
-              let exts = [findExtensions (semDir extensions) s f | s <- semantics, f <- frames]
-              mapM_ generateStatistics exts
+              let f = findExtensions $ semDir extensions
+              mapM_ (generateStatistics "out" semantics) $ f <$> frames
           _ → onErr []
     (_,_,errs) → onErr errs
