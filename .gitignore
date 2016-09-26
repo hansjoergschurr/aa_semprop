@@ -14,3 +14,14 @@ cabal.sandbox.config
 *.prof
 *.aux
 *.hp
+
+*.csv
+*.apx
+*.tgf
+*/.stack-work
+*/out
+*.swp
+*_log
+analyze/analyze
+statistics/analyze
+
