@@ -3,7 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{todonotes}
 
-\usepackage{biblatex}
+\usepackage[backend=biber]{biblatex}
 
 % Math imports
 \usepackage{amsmath}
@@ -28,23 +28,41 @@ This report summarizes the result of project work done for the lecture ``Abstrac
 Stefan Woltran. The goal of the project was to empiricaly evaluate certain properties of the extensions of a set
 of argumentation frameworks.
 
-Section~\ref{problemdesc} outlines the concept of argumentation frameworks, and extensions. Subsequently
-the terms Rejected Arguments and Implicit Conflicts are defined.
+Section~\ref{problemdesc} outlines the concept of argumentation frameworks, and
+extensions. Subsequently the terms Rejected Arguments and Implicit Conflicts
+are defined.
 
-Section~\ref{tools} presents the two tool that
-were developed for this project. A detailed instruction on how to compile the programs, and their
-command line arguments is given.
+Section~\ref{tools} presents the two tool that were developed for this project.
+A detailed instruction on how to compile the programs, and their command line
+arguments is given.
 
-The following section describes the empirical evaluation. First the set of frameworks is described.
-Some frameworks were generated with the help of a benchmark generator, some of them were selected
-from the ICCMA'15 benchmark set. Secondly the results are presented.
+The following section describes the empirical evaluation. First the set of
+frameworks is described.  Some frameworks were generated with the help of a
+benchmark generator, some of them were selected from the ICCMA'15 benchmark
+set. Secondly the results are presented.
 
 Finnaly section~\ref{conclusion} concludes this report with some final remarks.
 
 \subsection{Abstract Argumentation}
 
 Abstract Argumentation were introduced by Dung in 1995 \cite{dung95}. The definitions given
-here follow \cite{linsbichler2015hidden}. 
+here follow \cite{linsbichler2015hidden}.
+
+First and foremost a contably infinite domain $\mathfrak{A}$. An
+argumenentation framework is a tuple $F = (A,R)$ where $A$ is a finte subset of
+$\mathfrak{A}$ and $R \subseteq A\times A$.  $A$ is called the set of arguments
+and $R$ the attack relation. For a framework $F = (B, S)$ the notation $A_F$
+and $R_F$ is used to refer to $B$ and $S$. Futhermore $S \rightarrowtail_F a$
+denotes that there is an $s \in S$ such hat $(s, a) \in R_F$. $a
+\rightarrowtail_F S$ is defined equally. \todo{define defense}
+
+A \emph{semantic} is a mapping from a framework to a set $\sigma(A)$ of subsets of $A$.
+$S$ then is usually called a ($\sigma$-)extension. The semamntics used in this
+work are:
+\begin{enumerate}
+  \item Conflict-free: $S \in cf(F)$ if there is no pair $a,b \in S$, such that $(a,b) \in R$.
+  \item Admissible: $S \in adm(F)$ if $S$ defends itself.
+\end{enumerate}
 
 \subsection{Framework properties}
 \todo[inline]{write description of the theoretic stuff}
