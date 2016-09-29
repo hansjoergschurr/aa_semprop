@@ -39,13 +39,14 @@ arguments is given.
 The following section describes the empirical evaluation. First the set of
 frameworks is described.  Some frameworks were generated with the help of a
 benchmark generator, some of them were selected from the ICCMA'15 benchmark
-set. Secondly the results are presented.
+set. Secondly, the Aspartix framework, which was used to find the extensions
+is described. Then the results are presented.
 
 Finnaly section~\ref{conclusion} concludes this report with some final remarks.
 
 \subsection{Abstract Argumentation}
 
-Abstract Argumentation were introduced by Dung in 1995 \cite{dung95}. The definitions given
+Abstract Argumentation were introduced by Dung in 1995 \cite{dung1995}. The definitions given
 here follow \cite{linsbichler2015hidden}.
 
 First and foremost a contably infinite domain $\mathfrak{A}$. An
@@ -54,14 +55,24 @@ $\mathfrak{A}$ and $R \subseteq A\times A$.  $A$ is called the set of arguments
 and $R$ the attack relation. For a framework $F = (B, S)$ the notation $A_F$
 and $R_F$ is used to refer to $B$ and $S$. Futhermore $S \rightarrowtail_F a$
 denotes that there is an $s \in S$ such hat $(s, a) \in R_F$. $a
-\rightarrowtail_F S$ is defined equally. \todo{define defense}
+\rightarrowtail_F S$ is defined equally. An argument $a$ is said to be
+\emph{defended} by a set $S$, if for every $b \in A_F$ where $b \rightarrowtail_F a$
+there is a $c \in S$ such that $c \rightarrowtail_F b$. A set $T$ is said to be \emph{defended}
+by $S$ if every $a \in T$ is defended by $S$. The \emph{range} $S_F^{+}$ of a
+set $S$ is the set $S \cup\{b | S \rightarrowtail_F b\}$
 
 A \emph{semantic} is a mapping from a framework to a set $\sigma(A)$ of subsets of $A$.
 $S$ then is usually called a ($\sigma$-)extension. The semamntics used in this
 work are:
 \begin{enumerate}
-  \item Conflict-free: $S \in cf(F)$ if there is no pair $a,b \in S$, such that $(a,b) \in R$.
-  \item Admissible: $S \in adm(F)$ if $S$ defends itself.
+  \item Conflict-free: $S \in cf(F)$, if there is no pair $a,b \in S$, such that $(a,b) \in R$.
+  \item Admissible: $S \in adm(F)$, if $S$ defends itself.
+  \item Naive: $S \in nai(F)$ if $\nexists T\in cf(F)$ with $T \supset S$.
+  \item Stable: $S \in stb(F)$, if $S_F^{+} = A_F$.
+  \item Prefered: $S \in prf(F)$, if $S \in adm(F)$ and $\nexists T\in adm(F)$ with $T \supset S$.
+  \item Stage: $S \in stg(F)$, if $\nexists T\in cf(F)$ with $T_F^{+} \supset S_F^{+}$.
+  \item Semi-stable: $S \in sem(F)$, if $S \in adm(F)$ and $\nexists T\in adm(F)$ with
+          $T_F^{+} \supset S_F^{+}$.
 \end{enumerate}
 
 \subsection{Framework properties}
@@ -84,6 +95,7 @@ work are:
 \todo[inline]{write short desc of evaluation}
 \subsection{Generating the benchmarks}
 \todo[inline]{Do this!}
+\subsection{Finding Extensions using Aspartix}
 
 \section{Conclusion}
 \label{conclusion}
