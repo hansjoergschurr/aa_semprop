@@ -52,10 +52,16 @@ here follow \cite{linsbichler2015hidden}.
 First and foremost a contably infinite domain $\mathfrak{A}$. An
 argumenentation framework is a tuple $F = (A,R)$ where $A$ is a finte subset of
 $\mathfrak{A}$ and $R \subseteq A\times A$.  $A$ is called the set of arguments
-and $R$ the attack relation. For a framework $F = (B, S)$ the notation $A_F$
+and $R$ the attack relation.
+For a framework $F = (B, S)$ the notation $A_F$
 and $R_F$ is used to refer to $B$ and $S$. Futhermore $S \rightarrowtail_F a$
 denotes that there is an $s \in S$ such hat $(s, a) \in R_F$. $a
-\rightarrowtail_F S$ is defined equally. An argument $a$ is said to be
+\rightarrowtail_F S$ is defined equally. Intuitively the elements of $A$ are arguments of some form.
+One example would be natural language sentences such as $a=$``I will eat ice cream, because the
+sun is shining.'', and $b=$``The foreacast predicts it will rain in 15 minutes.''. The scond sentence
+would then attack the first one and therefore $b \rightarrowtail_F a$.
+
+ An argument $a$ is said to be
 \emph{defended} by a set $S$, if for every $b \in A_F$ where $b \rightarrowtail_F a$
 there is a $c \in S$ such that $c \rightarrowtail_F b$. A set $T$ is said to be \emph{defended}
 by $S$ if every $a \in T$ is defended by $S$. The \emph{range} $S_F^{+}$ of a
@@ -76,7 +82,11 @@ work are:
 \end{enumerate}
 
 \subsection{Framework properties}
-\todo[inline]{write description of the theoretic stuff}
+
+This project concentrated on two propiertes of an argumentation framework
+together with a set of extensions.
+
+
 \subsection{Empirical evaluation}
 \todo[inline]{write description of the evaluation}
 
