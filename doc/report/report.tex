@@ -12,6 +12,8 @@
 \usepackage{bussproofs}
 \usepackage{mathtools}
 
+\newtheorem{definition}{Definition}
+
 \addbibresource{ref.bib}
 \KOMAoption{bibliography}{totoc}
 
@@ -67,7 +69,7 @@ there is a $c \in S$ such that $c \rightarrowtail_F b$. A set $T$ is said to be 
 by $S$ if every $a \in T$ is defended by $S$. The \emph{range} $S_F^{+}$ of a
 set $S$ is the set $S \cup\{b | S \rightarrowtail_F b\}$
 
-A \emph{semantic} is a mapping from a framework to a set $\sigma(A)$ of subsets of $A$.
+A \emph{semantic} is a mapping from a framework to a set $\sigma(A)$ of subsets $S$ of $A$.
 $S$ then is usually called a ($\sigma$-)extension. The semamntics used in this
 work are:
 \begin{enumerate}
@@ -84,8 +86,40 @@ work are:
 \subsection{Framework properties}
 
 This project concentrated on two propiertes of an argumentation framework
-together with a set of extensions.
+together with a set of extensions. That means, that the concrete semantic
+used is at first not considered.
 
+An argument is rejected, if it doesn't appear in any extension:
+\begin{definition}
+Let $F=(A,R)$ be an argumentation framework, $\sigma$ a semantic, and $a\in A$ be an
+argument. $a$ is \emph{rejected} if $\nexists S\in\sigma(F): a\in S$.
+\end{definition}
+
+A framework is \emph{compact} if no argument is rejected:
+\begin{definition}
+Let $F=(A,R)$ be an argumentation framework, and $\sigma$ a semantic.
+The framework is \emph{compact} with respect to $\sigma$ if $\forall a\in A\exists
+S\in\sigma(S):a\in S$.
+\end{definition}
+
+Secondly, a framework containing no \emph{implicit conflcits} is called \emph{analytic}.
+\todo{Wird im finalen paper auch der Begriff anlaytic verwendet?}
+More formally:
+
+\begin{definition}
+  Let $F=(A,R)$ be an argumenation framework, $\sigma$ be an
+  arbrirtrary semantic and $a, b\in A$. If $\nexists S \in \sigma(F): {a,b} \subseteq S$
+  then $a$ and $b$ are in \emph{conflict}. If $(a,b) \in R$ or $(b, a)\in R$, then the
+  conflict is \emph{explicit}, otherwise the conflict is \emph{implicit}.
+\end{definition}
+
+In the privious definition $a = b$ is possible. If this definition is applied to
+the set of all extensions with respect to a framework and a fixed semantic.
+
+\begin{definition}
+Given an argumentation framework $F=(A,R)$ and a semantic $\sigma$, $F$ is called
+\emph{analytic} if all conflcits of $F$ for $\sigma$ are explicit.
+\end{definition}
 
 \subsection{Empirical evaluation}
 \todo[inline]{write description of the evaluation}
