@@ -165,8 +165,60 @@ where \texttt{\{tool\}} is either \texttt{analyze} or \texttt{statistics}:
 > stack exec {tool}
 \end{verbatim}
 
+The \texttt{stack build} command outputs the path the resulting binary
+is placed in. Calling \texttt{stack install} will copy the binary
+to \texttt{\~{}/.local/bin} on Linux.
+
 \subsection{Analyze}
-\todo[inline]{write desc. and manual of analyze}
+
+The \texttt{analyze} tool uses an argumentation framework and precomputed
+extensions and returns a list of properties. Executing \texttt{analyze}
+without any command line arguments results in a short description of
+its arguments.
+
+\begin{verbatim}
+Usage: analyze [-t] [-c] [-n] -f FILE -e FILE
+
+  -t         The framework is in Trivial Graph Format,
+    instead of Aspartix Format.
+  -c         The Extensions are in ICCMA competiton format,
+    instead of an output log of clasp.
+  -n         Output the number of elements instead of lists
+    e.g. for implicit conflicts.
+  -f FILE    FILE containing the framework.
+  -e FILE    FILE containing the extensions.
+\end{verbatim}
+
+Except \texttt{-f} and \texttt{-e} all arguments are optional.  The \texttt{-t}
+and \texttt{-c} options control the input format. \texttt{-t} defaults to the
+Aspartix format, which describes the framework using ASP syntax\footnote{For
+    more information on this and the other input formats see:
+\url{http://argumentationcompetition.org/2015/iccma15notes_v3.pdf}.}.
+Alternatively the Trivial Graph Format can be used. The \texttt{-c} option
+defaults to ``output log of clasp''. This means, that the input format is
+expected to be the result of running \texttt{clasp}\footnote{See:
+\url{https://www.cs.uni-potsdam.de/clasp/}} on the input framework. The intended
+purpose of this option is to compute the extensions by using the
+Aspartix\footnote{See:
+\url{http://www.dbai.tuwien.ac.at/research/project/argumentation/systempage/}}
+framework of ASP programs. Alternatively the format used in the ICCMA'15
+competition can be used. The default options are better tested then the
+alternative options.
+
+Running \texttt{analyze} on an input framework $F=(A,R)$ together with a set of
+extensions $\sigma(F)$ results in a list of properties:
+\begin{itemize}
+  \item Arguments: The number of arguments ($|A|$).
+  \item Extensions:	The number of extensions ($|\sigma(F)|$)
+  \item Downwards Closed:	\todo{describe}
+  \item Tight: \todo{describe}
+  \item Conflict Sensitive: \todo{describe}
+  \item In Signatures Of: \todo{describe}
+  \item Rejected Arguments: \todo{describe}
+  \item Implicit Conflicts: \todo{describe}
+  \item Implicit Conflicts not Rejected: \todo{describe}
+\end{itemize}
+
 \subsection{Statistics}
 \todo[inline]{write desc. and manual of statistics}
 
