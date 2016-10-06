@@ -4,6 +4,7 @@
 \usepackage{todonotes}
 
 \usepackage[backend=biber]{biblatex}
+\usepackage{hyperref}
 
 % Math imports
 \usepackage{amsmath}
@@ -26,13 +27,14 @@
 
 \section{Problem Description}
 \label{problemdesc}
-This report summarizes the result of project work done for the lecture ``Abstract Argumentation'' at TU~Wien by
-Stefan Woltran. The goal of the project was to empiricaly evaluate certain properties of the extensions of a set
-of argumentation frameworks.
+This report summarizes the result of project work done for the lecture
+``Abstract Argumentation'' at TU~Wien by Stefan Woltran. The goal of the project
+was to empirically evaluate certain properties of the extensions of a set of
+argumentation frameworks.
 
 Section~\ref{problemdesc} outlines the concept of argumentation frameworks, and
-extensions. Subsequently the terms Rejected Arguments and Implicit Conflicts
-are defined.
+extensions. Subsequently the terms Rejected Arguments and Implicit Conflicts are
+defined.
 
 Section~\ref{tools} presents the two tool that were developed for this project.
 A detailed instruction on how to compile the programs, and their command line
@@ -40,95 +42,129 @@ arguments is given.
 
 The following section describes the empirical evaluation. First the set of
 frameworks is described.  Some frameworks were generated with the help of a
-benchmark generator, some of them were selected from the ICCMA'15 benchmark
-set. Secondly, the Aspartix framework, which was used to find the extensions
-is described. Then the results are presented.
+benchmark generator, some of them were selected from the ICCMA'15 benchmark set.
+Secondly, the Aspartix framework, which was used to find the extensions is
+described. Then the results are presented.
 
-Finnaly section~\ref{conclusion} concludes this report with some final remarks.
+Finally section~\ref{conclusion} concludes this report with some final remarks.
 
 \subsection{Abstract Argumentation}
 
-Abstract Argumentation were introduced by Dung in 1995 \cite{dung1995}. The definitions given
-here follow \cite{linsbichler2015hidden}.
+Abstract Argumentation were introduced by Dung in 1995 \cite{dung1995}. The
+definitions given here follow \cite{linsbichler2015hidden}.
 
-First and foremost a contably infinite domain $\mathfrak{A}$. An
-argumenentation framework is a tuple $F = (A,R)$ where $A$ is a finte subset of
-$\mathfrak{A}$ and $R \subseteq A\times A$.  $A$ is called the set of arguments
-and $R$ the attack relation.
-For a framework $F = (B, S)$ the notation $A_F$
-and $R_F$ is used to refer to $B$ and $S$. Futhermore $S \rightarrowtail_F a$
-denotes that there is an $s \in S$ such hat $(s, a) \in R_F$. $a
-\rightarrowtail_F S$ is defined equally. Intuitively the elements of $A$ are arguments of some form.
-One example would be natural language sentences such as $a=$``I will eat ice cream, because the
-sun is shining.'', and $b=$``The foreacast predicts it will rain in 15 minutes.''. The scond sentence
-would then attack the first one and therefore $b \rightarrowtail_F a$.
+First and foremost a countably infinite domain $\mathfrak{A}$. An argumentation
+framework is a tuple $F = (A,R)$ where $A$ is a finite subset of $\mathfrak{A}$
+and $R \subseteq A\times A$.  $A$ is called the set of arguments and $R$ the
+attack relation.  For a framework $F = (B, S)$ the notation $A_F$ and $R_F$ is
+used to refer to $B$ and $S$. Furthermore $S \rightarrowtail_F a$ denotes that
+there is an $s \in S$ such hat $(s, a) \in R_F$. $a \rightarrowtail_F S$ is
+defined equally. Intuitively the elements of $A$ are arguments of some form.
+One example would be natural language sentences such as $a=$``I will eat ice
+cream, because the sun is shining.'', and $b=$``The foreacast predicts it will
+rain in 15 minutes.''. The scond sentence would then attack the first one and
+therefore $b \rightarrowtail_F a$.
 
- An argument $a$ is said to be
-\emph{defended} by a set $S$, if for every $b \in A_F$ where $b \rightarrowtail_F a$
-there is a $c \in S$ such that $c \rightarrowtail_F b$. A set $T$ is said to be \emph{defended}
-by $S$ if every $a \in T$ is defended by $S$. The \emph{range} $S_F^{+}$ of a
-set $S$ is the set $S \cup\{b | S \rightarrowtail_F b\}$
+An argument $a$ is said to be \emph{defended} by a set $S$, if for every $b \in
+A_F$ where $b \rightarrowtail_F a$ there is a $c \in S$ such that $c
+\rightarrowtail_F b$. A set $T$ is said to be \emph{defended} by $S$ if every
+$a \in T$ is defended by $S$. The \emph{range} $S_F^{+}$ of a set $S$ is the
+set $S \cup\{b | S \rightarrowtail_F b\}$
 
-A \emph{semantic} is a mapping from a framework to a set $\sigma(A)$ of subsets $S$ of $A$.
-$S$ then is usually called a ($\sigma$-)extension. The semamntics used in this
-work are:
+A \emph{semantic} is a mapping from a framework to a set $\sigma(A)$ of subsets
+$S$ of $A$.  $S$ then is usually called a ($\sigma$-)extension. The semantics
+used in this work are:
 \begin{enumerate}
-  \item Conflict-free: $S \in cf(F)$, if there is no pair $a,b \in S$, such that $(a,b) \in R$.
+  \item Conflict-free: $S \in cf(F)$, if there is no pair $a,b \in S$, such that
+      $(a,b) \in R$.
   \item Admissible: $S \in adm(F)$, if $S$ defends itself.
   \item Naive: $S \in nai(F)$ if $\nexists T\in cf(F)$ with $T \supset S$.
   \item Stable: $S \in stb(F)$, if $S_F^{+} = A_F$.
-  \item Prefered: $S \in prf(F)$, if $S \in adm(F)$ and $\nexists T\in adm(F)$ with $T \supset S$.
-  \item Stage: $S \in stg(F)$, if $\nexists T\in cf(F)$ with $T_F^{+} \supset S_F^{+}$.
-  \item Semi-stable: $S \in sem(F)$, if $S \in adm(F)$ and $\nexists T\in adm(F)$ with
-          $T_F^{+} \supset S_F^{+}$.
+  \item Preferred: $S \in prf(F)$, if $S \in adm(F)$ and $\nexists T\in adm(F)$
+      with $T \supset S$.
+  \item Stage: $S \in stg(F)$, if $\nexists T\in cf(F)$ with $T_F^{+} \supset
+      S_F^{+}$.
+  \item Semi-stable: $S \in sem(F)$, if $S \in adm(F)$ and $\nexists T\in
+      adm(F)$ with $T_F^{+} \supset S_F^{+}$.
 \end{enumerate}
 
 \subsection{Framework properties}
 
-This project concentrated on two propiertes of an argumentation framework
-together with a set of extensions. That means, that the concrete semantic
-used is at first not considered.
+This project concentrated on two properties of an argumentation framework
+together with a set of extensions. That means, that the concrete semantic used
+is at first not considered.
 
 An argument is rejected, if it doesn't appear in any extension:
+
 \begin{definition}
-Let $F=(A,R)$ be an argumentation framework, $\sigma$ a semantic, and $a\in A$ be an
-argument. $a$ is \emph{rejected} if $\nexists S\in\sigma(F): a\in S$.
+Let $F=(A,R)$ be an argumentation framework, $\sigma$ a semantic, and $a\in A$
+be an argument. $a$ is \emph{rejected} if $\nexists S\in\sigma(F): a\in S$.
 \end{definition}
 
 A framework is \emph{compact} if no argument is rejected:
+
 \begin{definition}
-Let $F=(A,R)$ be an argumentation framework, and $\sigma$ a semantic.
-The framework is \emph{compact} with respect to $\sigma$ if $\forall a\in A\exists
+Let $F=(A,R)$ be an argumentation framework, and $\sigma$ a semantic.  The
+framework is \emph{compact} with respect to $\sigma$ if $\forall a\in A\exists
 S\in\sigma(S):a\in S$.
 \end{definition}
 
-Secondly, a framework containing no \emph{implicit conflcits} is called \emph{analytic}.
-\todo{Wird im finalen paper auch der Begriff anlaytic verwendet?}
-More formally:
+Secondly, a framework containing no \emph{implicit conflicts} is called
+\emph{analytic}.  \todo{Wird im finalen paper auch der Begriff anlaytic
+verwendet?} More formally:
 
 \begin{definition}
-  Let $F=(A,R)$ be an argumenation framework, $\sigma$ be an
-  arbrirtrary semantic and $a, b\in A$. If $\nexists S \in \sigma(F): {a,b} \subseteq S$
-  then $a$ and $b$ are in \emph{conflict}. If $(a,b) \in R$ or $(b, a)\in R$, then the
+  Let $F=(A,R)$ be an argumentation framework, $\sigma$ be an arbitrary semantic
+  and $a, b\in A$. If $\nexists S \in \sigma(F): {a,b} \subseteq S$ then $a$ and
+  $b$ are in \emph{conflict}. If $(a, b) \in R$ or $(b, a)\in R$, then the
   conflict is \emph{explicit}, otherwise the conflict is \emph{implicit}.
 \end{definition}
 
-In the privious definition $a = b$ is possible. If this definition is applied to
+In the previous definition $a = b$ is possible. If this definition is applied to
 the set of all extensions with respect to a framework and a fixed semantic.
 
 \begin{definition}
-Given an argumentation framework $F=(A,R)$ and a semantic $\sigma$, $F$ is called
-\emph{analytic} if all conflcits of $F$ for $\sigma$ are explicit.
+Given an argumentation framework $F=(A,R)$ and a semantic $\sigma$, $F$ is
+called \emph{analytic} if all conflicts of $F$ for $\sigma$ are explicit.
 \end{definition}
+
+Since conflicts involving an argument which is rejected are always implicit the
+(number of) conflicts which do not involve a rejected argument.
 
 \subsection{Empirical evaluation}
 \todo[inline]{write description of the evaluation}
 
 \section{The Tools}
 \label{tools}
-\todo[inline]{write short description of tools and paragraphs}
+In this section the tools developed in this project word are described. The
+first section gives detailed introduction how to compile them. Since the tools
+are developed in the Haskell programing language, a build tool for Haskell is
+used.
+
+Then the subsequent chapter documents the \texttt{analyze} tool. This tool is
+used to analyze a given set of extensions together with a framework. It outputs
+a list of properties and offers a number of input formats.
+
+\texttt{statistics} is the second tool described. Given a set of input
+frameworks it automatically calls a program to compute the extensions and
+subsequently uses \texttt{analyze} to compute the properties of the extensions.
+
 \subsection{Building the tools}
-\todo[inline]{write desc. on how to compile the tools}
+
+Both tools are written in Haskell. While there are multiple ways to build the
+tools, using \emph{Stack} is strongly suggested and documented here.
+
+To install Stack follow the instructions on the Stack homepage
+\url{https://haskellstack.org}. Then open a terminal and navigate to either
+\texttt{analyze/} or \texttt{statistics/}. Then run then following command,
+where \texttt{\{tool\}} is either \texttt{analyze} or \texttt{statistics}:
+
+\begin{verbatim}
+> stack setup
+> stack build
+> stack exec {tool}
+\end{verbatim}
+
 \subsection{Analyze}
 \todo[inline]{write desc. and manual of analyze}
 \subsection{Statistics}
