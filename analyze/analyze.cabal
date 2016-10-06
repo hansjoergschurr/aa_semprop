@@ -17,7 +17,7 @@ cabal-version: >=1.10
 
 executable analyze
   main-is: Main.hs
-  -- other-modules:
+  other-modules: Extensions, Frameworks, Semantics
   -- other-extensions:
   ghc-options: -O2
   build-depends: base >=4.8 && <4.9, containers >= 0.5, bytestring >= 0.10, regex-posix >= 0.95
