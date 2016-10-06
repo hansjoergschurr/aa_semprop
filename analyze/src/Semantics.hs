@@ -149,20 +149,20 @@ semanticProperties f e = SemanticProperties {
   closureIsTight = isTight $ (\(Extensions s) → Extensions (closure s)) e,
   conflictSensitive = isConflictSensitive e}
 
-filiterConflictByArguments ∷  S.Set Argument → S.Set (Argument, Argument) → S.Set (Argument, Argument)
-filiterConflictByArguments c = S.filter f
+filterConflictByArguments ∷  S.Set Argument → S.Set (Argument, Argument) → S.Set (Argument, Argument)
+filterConflictByArguments c = S.filter f
   where f (a,b) = not (a `S.member` c || b `S.member` c)
 
 outLists False sp = do
   outputLine "Rejected Arguments" $ rejectedArguments sp
   outputLine "Implicit Conflicts" $ implicitConflicts sp
   outputLine "Implicit Conflicts not Rejected" $
-    filiterConflictByArguments (rejectedArguments sp) (implicitConflicts sp)
+    filterConflictByArguments (rejectedArguments sp) (implicitConflicts sp)
 outLists True sp = do
   outputLine "Rejected Arguments" $ S.size (rejectedArguments sp)
   outputLine "Implicit Conflicts" $ S.size (implicitConflicts sp)
   outputLine "Implicit Conflicts not Rejected" $
-    S.size (filiterConflictByArguments (rejectedArguments sp) (implicitConflicts sp))
+    S.size (filterConflictByArguments (rejectedArguments sp) (implicitConflicts sp))
 
 outputSemanticProperties n f e = do
   let sp = semanticProperties f e
