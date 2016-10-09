@@ -24,7 +24,7 @@ flags = [Option ['a'] [] (ReqArg FApxDir "APX_DIR")
             "Comma seprerated list of three letter names of the semantics to calculate."
           ]
 
-header = "Usage: semantics -a APX_DIR -f FRAMEWORK_DIR [-sSEMANTICS] [OUTPUTFILE]\n"
+header = "Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-sSEMANTICS] [OUTPUTFILE]\n"
 
 getFrameworkPath [] = Nothing
 getFrameworkPath (FFramework s:_) = Just $ T.pack s
@@ -86,6 +86,7 @@ main = do
               let output = fromText . T.pack $ head (argv++["output.csv"])
               frames ← findWhen (return.hasExt "apx") $ fromText framework
               let f = findExtensions $ semDir extensions
+              csvHeader output semantics
               mapM_ (generateStatistics output semantics) $ f <$> frames
           _ → onErr []
     (_,_,errs) → onErr errs
