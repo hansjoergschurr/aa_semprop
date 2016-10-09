@@ -88,7 +88,7 @@ used in this work are:
       adm(F)$ with $T_F^{+} \supset S_F^{+}$.
 \end{enumerate}
 
-\subsection{Framework properties}
+\subsection{Framework properties} \label{framework_props}
 
 This project concentrated on two properties of an argumentation framework
 together with a set of extensions. That means, that the concrete semantic used
@@ -210,14 +210,34 @@ extensions $\sigma(F)$ results in a list of properties:
 \begin{itemize}
   \item Arguments: The number of arguments ($|A|$).
   \item Extensions:	The number of extensions ($|\sigma(F)|$)
-  \item Downwards Closed:	\todo{describe}
-  \item Tight: \todo{describe}
-  \item Conflict Sensitive: \todo{describe}
-  \item In Signatures Of: \todo{describe}
-  \item Rejected Arguments: \todo{describe}
-  \item Implicit Conflicts: \todo{describe}
-  \item Implicit Conflicts not Rejected: \todo{describe}
+  \item Downwards Closed:	\texttt{True} if $\sigma(F)$ is downwards closed, \texttt{False} otherwise.
+    $\sigma(F)$ is \emph{downwards closed}, if $S \in \sigma(F)\Rightarrow
+    \forall S'\subseteq S: S'\in\sigma(F)$.
+  \item Tight: \texttt{True} if $\sigma(F)$ is downwards closed, \texttt{False} otherwise.
+    $\sigma(F)$ is \emph{tight} if $\forall a\in\bigcup_{S\in\sigma(F)}S$ it holds, that
+    for all $S\in\sigma(F)$ where $S\cup\{a\}\notin\sigma(F)$ there is an $b\in S$ such that $a$ and $b$
+    never both occur in any set of $\sigma(F)$.
+  \item Conflict Sensitive: \texttt{True} if $\sigma(F)$ is conflict sensitive, \texttt{False} otherwise.
+    $\sigma(F)$ is \emph{conflict sensitive} if for all $A, B\in\sigma(F)$ such that $A\cup B\notin\sigma(F)$
+    there is $a, b\in A\cup B$ such that $a$ and $b$ never both occur in any set of $\sigma(F)$.
+  \item In Signatures Of: Given a set of extensions $\mathbb{S}$ and a semantic $\sigma$, is there a
+    argumentation framework $F$, such that $\mathbb{S} = \sigma(F)$. If such a framework exists,
+    then $\mathbb{S}$ is said to be in the signature of $\sigma$. This property lists semantics in which signatures
+    the given set of extensions is, as described in \cite{dunne2015characteristics}.
+  \item Rejected Arguments: The list of rejected arguments as described in subsection~\ref{framework_props}.
+  \item Implicit Conflicts: The list of implicit conflicts as described in subsection~\ref{framework_props}.
+  \item Implicit Conflicts not Rejected: The list of implicit conflicts that do not contain rejected arguments
+    as described in subsection~\ref{framework_props}.
 \end{itemize}
+
+The properties ``Downwards Closed'', ``Tight'', and ``Conflict Sensitive'' were defined
+in \cite{dunne2015characteristics}. Note that \emph{com-closedness} is not computed. Furthermore
+the program tests for incomparability, but does not output this property to the command line.
+``Rejected Arguments'' and ``Implicit Conflicts'' were defined in \cite{linsbichler2015hidden}.
+
+Finally, the command line option \texttt{-n} results in \texttt{analyze} outputting the number
+of rejected arguments, implicit conflicts, and implicit conflicts not rejected, instead
+of lists.
 
 \subsection{Statistics}
 \todo[inline]{write desc. and manual of statistics}
