@@ -1,4 +1,4 @@
-\documentclass{scrartcl}
+\documentclass[parskip=half]{scrartcl}
 
 \usepackage[utf8]{inputenc}
 \usepackage{todonotes}
@@ -210,37 +210,98 @@ extensions $\sigma(F)$ results in a list of properties:
 \begin{itemize}
   \item Arguments: The number of arguments ($|A|$).
   \item Extensions:	The number of extensions ($|\sigma(F)|$)
-  \item Downwards Closed:	\texttt{True} if $\sigma(F)$ is downwards closed, \texttt{False} otherwise.
-    $\sigma(F)$ is \emph{downwards closed}, if $S \in \sigma(F)\Rightarrow
-    \forall S'\subseteq S: S'\in\sigma(F)$.
-  \item Tight: \texttt{True} if $\sigma(F)$ is downwards closed, \texttt{False} otherwise.
-    $\sigma(F)$ is \emph{tight} if $\forall a\in\bigcup_{S\in\sigma(F)}S$ it holds, that
-    for all $S\in\sigma(F)$ where $S\cup\{a\}\notin\sigma(F)$ there is an $b\in S$ such that $a$ and $b$
-    never both occur in any set of $\sigma(F)$.
-  \item Conflict Sensitive: \texttt{True} if $\sigma(F)$ is conflict sensitive, \texttt{False} otherwise.
-    $\sigma(F)$ is \emph{conflict sensitive} if for all $A, B\in\sigma(F)$ such that $A\cup B\notin\sigma(F)$
-    there is $a, b\in A\cup B$ such that $a$ and $b$ never both occur in any set of $\sigma(F)$.
-  \item In Signatures Of: Given a set of extensions $\mathbb{S}$ and a semantic $\sigma$, is there a
-    argumentation framework $F$, such that $\mathbb{S} = \sigma(F)$. If such a framework exists,
-    then $\mathbb{S}$ is said to be in the signature of $\sigma$. This property lists semantics in which signatures
-    the given set of extensions is, as described in \cite{dunne2015characteristics}.
-  \item Rejected Arguments: The list of rejected arguments as described in subsection~\ref{framework_props}.
-  \item Implicit Conflicts: The list of implicit conflicts as described in subsection~\ref{framework_props}.
-  \item Implicit Conflicts not Rejected: The list of implicit conflicts that do not contain rejected arguments
-    as described in subsection~\ref{framework_props}.
+  \item Downwards Closed:	\texttt{True} if $\sigma(F)$ is downwards closed,
+      \texttt{False} otherwise.  $\sigma(F)$ is \emph{downwards closed}, if $S
+      \in \sigma(F)\Rightarrow \forall S'\subseteq S: S'\in\sigma(F)$.
+  \item Tight: \texttt{True} if $\sigma(F)$ is downwards closed, \texttt{False}
+      otherwise.  $\sigma(F)$ is \emph{tight} if $\forall
+      a\in\bigcup_{S\in\sigma(F)}S$ it holds, that for all $S\in\sigma(F)$ where
+      $S\cup\{a\}\notin\sigma(F)$ there is an $b\in S$ such that $a$ and $b$
+      never both occur in any set of $\sigma(F)$.
+  \item Conflict Sensitive: \texttt{True} if $\sigma(F)$ is conflict sensitive,
+      \texttt{False} otherwise.  $\sigma(F)$ is \emph{conflict sensitive} if for
+      all $A, B\in\sigma(F)$ such that $A\cup B\notin\sigma(F)$ there is $a,
+      b\in A\cup B$ such that $a$ and $b$ never both occur in any set of
+      $\sigma(F)$.
+  \item In Signatures Of: Given a set of extensions $\mathbb{S}$ and a semantic
+      $\sigma$, is there a argumentation framework $F$, such that $\mathbb{S} =
+      \sigma(F)$. If such a framework exists, then $\mathbb{S}$ is said to be in
+      the signature of $\sigma$. This property lists semantics in which
+      signatures the given set of extensions is, as described in
+      \cite{dunne2015characteristics}.
+  \item Rejected Arguments: The list of rejected arguments as described in
+      subsection~\ref{framework_props}.
+  \item Implicit Conflicts: The list of implicit conflicts as described in
+      subsection~\ref{framework_props}.
+  \item Implicit Conflicts not Rejected: The list of implicit conflicts that do
+      not contain rejected arguments as described in
+      subsection~\ref{framework_props}.
 \end{itemize}
 
-The properties ``Downwards Closed'', ``Tight'', and ``Conflict Sensitive'' were defined
-in \cite{dunne2015characteristics}. Note that \emph{com-closedness} is not computed. Furthermore
-the program tests for incomparability, but does not output this property to the command line.
-``Rejected Arguments'' and ``Implicit Conflicts'' were defined in \cite{linsbichler2015hidden}.
+The properties ``Downwards Closed'', ``Tight'', and ``Conflict Sensitive'' were
+defined in \cite{dunne2015characteristics}. Note that \emph{com-closedness} is
+not computed. Furthermore the program tests for incomparability, but does not
+output this property to the command line.  ``Rejected Arguments'' and ``Implicit
+Conflicts'' were defined in \cite{linsbichler2015hidden}.
 
-Finally, the command line option \texttt{-n} results in \texttt{analyze} outputting the number
-of rejected arguments, implicit conflicts, and implicit conflicts not rejected, instead
-of lists.
+Finally, the command line option \texttt{-n} results in \texttt{analyze}
+outputting the number of rejected arguments, implicit conflicts, and implicit
+conflicts not rejected, instead of lists.
 
 \subsection{Statistics}
-\todo[inline]{write desc. and manual of statistics}
+
+The \texttt{analyze} program calculates some properties on a given framework and
+a set of its extensions. The \texttt{statistics} program takes a folder
+containing frameworks, calculates their extensions and calls \texttt{analyze} on
+the result. The properties are then written in a CSV file.
+
+While \texttt{statistics} is written in Haskell and compiles to a standalone
+executable, it assumes an Unix like environment and was only tested on Linux.
+Similar to shell scripts it does minimal error checking and might output
+somewhat convoluted error messages.
+
+To calculate the extensions, the \emph{clasp} version of the Aspartix framework
+is used.  In fact, \texttt{statistics} calls the \texttt{clingo} program which
+integrates \texttt{clasp} and the \texttt{gringo} grounder. Therefore,
+\texttt{clingo} version 4.4.0 must be installed.  A copy of the relevant
+Aspartix programs are provided in the \texttt{APX/} subdirectory.
+
+Executing \texttt{analyze} without any command line arguments results in a short
+description of its arguments.
+\begin{verbatim}
+Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-sSEMANTICS] [OUTPUTFILE]
+
+  -a APX_DIR          Directory containing the Aspartix ASP encodings.
+  -f FRAMEWORK_DIR    Directory containing the the argumentation
+    frameworks in APX format.
+  -s[SEMANTICS]       Comma seprerated list of three letter names of
+    the semantics to calculate.
+\end{verbatim}
+
+The \texttt{-a} command line option specifies the directory the Aspartix ASP
+programs are found in. Normally this would be the \texttt{APX\/} subdirectory.
+The following programs must be present in this folder: \texttt{adm.dl},
+\texttt{prefex\_gringo.lp}, \texttt{semi\_stable\_gringo.lp},
+\texttt{stable.dl}, \texttt{stage\_gringo.lp}.  The \texttt{-f} command line
+option specifies the directory containing the frameworks in Aspartix format.
+This directory will be scanned recursively. The program will then create a new
+dictionary \texttt{out\/} where the \texttt{clingo} logs will be written into.
+Finally, the optional \texttt{-s} option allows the user to restrict the
+semantics used. The list can contain the following three letter names:
+\texttt{adm}, \texttt{stb}, \texttt{prf}, \texttt{stg}, \texttt{sem}. Note that
+the order in the output file will always be as given in this list, even when the
+names given to \texttt{-s} are in a different order. If a filename is given to
+\texttt{statistics} as \texttt{OUTPUTFIILE}, this name is used for the CSV file.
+Otherwise it will be called \texttt{out.csv}.
+
+The output file generated by \texttt{statistics} is a CSV file. The rows are
+separated by the comma character '\texttt{,}'. The file contains one row for
+every framework in the input directory and contains its name in the first
+column. The second column contains the number of arguments in the framework.
+Then, for every semantic considered, the file contains three columns: the number
+of extensions, the number of rejected arguments, the number of implicit
+conflicts, and the number of implicit conflicts not rejected.  The very first
+line of the CSV file is a header and can be ignored.
 
 \section{Evaluation}
 \label{evaluation}
