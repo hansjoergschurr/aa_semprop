@@ -284,7 +284,8 @@ The following programs must be present in this folder: \texttt{adm.dl},
 \texttt{prefex\_gringo.lp}, \texttt{semi\_stable\_gringo.lp},
 \texttt{stable.dl}, \texttt{stage\_gringo.lp}.  The \texttt{-f} command line
 option specifies the directory containing the frameworks in Aspartix format.
-This directory will be scanned recursively. The program will then create a new
+This directory will be scanned recursively for files ending
+with \texttt{.apx}. The program will then create a new
 dictionary \texttt{out\/} where the \texttt{clingo} logs will be written into.
 Finally, the optional \texttt{-s} option allows the user to restrict the
 semantics used. The list can contain the following three letter names:
