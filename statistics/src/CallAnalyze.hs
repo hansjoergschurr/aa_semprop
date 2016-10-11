@@ -17,14 +17,29 @@ analyzeFramework includeArguments (f,e) = sub $ silently $ do
   let allProps = if includeArguments then "Arguments":props else props
   return $ map (T.stripStart.fromJust.(`lookup` dict)) allProps
 
+nan :: Sh [T.Text]
+nan = return ["NaN", "NaN", "NaN", "NaN"]
+
+ana [] = Nothing
+ana ((_,Nothing):xs) = liftM2 (:) (Just nan) (ana xs)
+ana ((f,Just e):xs) = Just $ analyzeFramework True (f,e):ana' xs
+
+ana' [] = []
+ana' ((f, Just e):xs) = analyzeFramework False (f,e):ana' xs
+ana' ((_,Nothing):xs) = nan:ana' xs
+
 -- Writes the statistics for one framework
-generateStatistics ∷ Shelly.FilePath → [T.Text] → (T.Text → Sh (T.Text, T.Text))→ Sh ()
+generateStatistics ∷ Shelly.FilePath → [T.Text] → (T.Text → Sh (T.Text, Maybe T.Text))→ Sh ()
 generateStatistics outfile semantics extF = do
-  (l:logs) ← sequence $ extF <$> semantics
-  stats ← sequence $ analyzeFramework True l:map (analyzeFramework False) logs
+  logs ← sequence $ extF <$> semantics
   let frame = fst $ head logs
-  appendfile outfile $ T.intercalate "," (frame:concat stats)
-  appendfile outfile "\n"
+  case ana logs of
+    Just a -> do
+      stats ← sequence a
+      appendfile outfile $ T.intercalate "," (frame:concat stats)
+      appendfile outfile "\n"
+    Nothing ->
+      echo $ T.append "Skiped: " frame
 
 -- Generate the csv header
 csvHeader ∷ Shelly.FilePath → [T.Text] → Sh ()
