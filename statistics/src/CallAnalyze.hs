@@ -12,10 +12,16 @@ analyze =
 analyzeFramework includeArguments (f,e) = sub $ silently $ do
   echo $ T.concat ["Analyzing: ", f, ", ", e]
   out ← analyze ["-f", f, "-e", e]
-  let dict = map (T.break (== '\t')) $ T.lines out
-  let props = ["Extensions", "Rejected Arguments", "Implicit Conflicts", "Implicit Conflicts not Rejected"]
-  let allProps = if includeArguments then "Arguments":props else props
-  return $ map (T.stripStart.fromJust.(`lookup` dict)) allProps
+  code <- lastExitCode
+  if code == 0 then do
+    let dict = map (T.break (== '\t')) $ T.lines out
+    let props = ["Extensions", "Rejected Arguments", "Implicit Conflicts", "Implicit Conflicts not Rejected"]
+    let allProps = if includeArguments then "Arguments":props else props
+    return $ map (T.stripStart.fromJust.(`lookup` dict)) allProps
+  else if includeArguments then
+      return ["Err","Err", "Err","Err", "Err"]
+    else
+      return ["Err", "Err","Err", "Err"]
 
 nan :: Sh [T.Text]
 nan = return ["NaN", "NaN", "NaN", "NaN"]
