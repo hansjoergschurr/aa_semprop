@@ -18,7 +18,8 @@
 \addbibresource{ref.bib}
 \KOMAoption{bibliography}{totoc}
 
-\title{AA}
+\title{Project Description}
+\subtitle{For Course 184.682: Abstract Argumentation}
 \author{Hans-Jörg Schurr}
 
 \begin{document}
@@ -49,7 +50,7 @@ described. Then the results are presented.
 Finally section~\ref{conclusion} concludes this report with some final remarks.
 
 \subsection{Abstract Argumentation}
-
+\label{aadef}
 Abstract Argumentation were introduced by Dung in 1995 \cite{dung1995}. The
 definitions given here follow \cite{linsbichler2015hidden}.
 
@@ -89,7 +90,6 @@ used in this work are:
 \end{enumerate}
 
 \subsection{Framework properties} \label{framework_props}
-
 This project concentrated on two properties of an argumentation framework
 together with a set of extensions. That means, that the concrete semantic used
 is at first not considered.
@@ -110,8 +110,7 @@ S\in\sigma(S):a\in S$.
 \end{definition}
 
 Secondly, a framework containing no \emph{implicit conflicts} is called
-\emph{analytic}.  \todo{Wird im finalen paper auch der Begriff anlaytic
-verwendet?} More formally:
+\emph{analytic}. More formally:
 
 \begin{definition}
   Let $F=(A,R)$ be an argumentation framework, $\sigma$ be an arbitrary semantic
@@ -132,7 +131,25 @@ Since conflicts involving an argument which is rejected are always implicit the
 (number of) conflicts which do not involve a rejected argument.
 
 \subsection{Empirical evaluation}
-\todo[inline]{write description of the evaluation}
+Since the tools developed for this project calculate properties of
+frameworks and extensions it is obvious, that an empirical evaluation
+makes sense. This evaluation serves two purposes: First, the stability
+and correctness of the tools are tested. Secondly, some insightful
+results might be obtained.
+
+To test the tools a set of test frameworks is needed. The extensions
+can then be computed by using on of the tools available to compute
+the extensions from frameworks. In the case of this project it is
+the Aspartix framework, together with the clasp answer set programing
+system.
+
+In 2015 the first ``International Competition on Computational
+Models of Argumentation'' was held
+\footnote{see: \url{http://argumentationcompetition.org/2015/}}. The
+test set used to test the programs participating in this competition
+can be used to evaluate the tools developed for this project. Furthermore,
+the program \texttt{AFBenchGen2} can be used to generate artificial
+abstract argumentation benchmarks.
 
 \section{The Tools}
 \label{tools}
@@ -150,7 +167,6 @@ frameworks it automatically calls a program to compute the extensions and
 subsequently uses \texttt{analyze} to compute the properties of the extensions.
 
 \subsection{Building the tools}
-
 Both tools are written in Haskell. While there are multiple ways to build the
 tools, using \emph{Stack} is strongly suggested and documented here.
 
@@ -158,7 +174,6 @@ To install Stack follow the instructions on the Stack homepage
 \url{https://haskellstack.org}. Then open a terminal and navigate to either
 \texttt{analyze/} or \texttt{statistics/}. Then run then following command,
 where \texttt{\{tool\}} is either \texttt{analyze} or \texttt{statistics}:
-
 \begin{verbatim}
 > stack setup
 > stack build
@@ -269,11 +284,14 @@ Aspartix programs are provided in the \texttt{APX/} subdirectory.
 Executing \texttt{analyze} without any command line arguments results in a short
 description of its arguments.
 \begin{verbatim}
-Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-sSEMANTICS] [OUTPUTFILE]
+Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-tTIMELIMIT] [-sSEMANTICS]
+  [OUTPUTFILE]
 
   -a APX_DIR          Directory containing the Aspartix ASP encodings.
   -f FRAMEWORK_DIR    Directory containing the the argumentation
     frameworks in APX format.
+  -t[TIMELIMIT]       Timelimit given to clingo. Default is 120 seconds.
+    A timelimit of 0 deactivates the timelimiting.
   -s[SEMANTICS]       Comma seprerated list of three letter names of
     the semantics to calculate.
 \end{verbatim}
@@ -287,6 +305,12 @@ option specifies the directory containing the frameworks in Aspartix format.
 This directory will be scanned recursively for files ending
 with \texttt{.apx}. The program will then create a new
 dictionary \texttt{out\/} where the \texttt{clingo} logs will be written into.
+To restrict the time that \texttt{clingo} is allowed to use per call, the
+\texttt{-t} option can be used. The default is 120 seconds. time-limiting
+clingo can be disabled by \texttt{-t0}. If a \texttt{clingo} call times out, the
+affected values in the output file will replaced by the string \texttt{NaN}.
+If \texttt{clingo} times out for all requested semantics, the affected
+framework will be skipped entirely.
 Finally, the optional \texttt{-s} option allows the user to restrict the
 semantics used. The list can contain the following three letter names:
 \texttt{adm}, \texttt{stb}, \texttt{prf}, \texttt{stg}, \texttt{sem}. Note that
@@ -306,10 +330,64 @@ line of the CSV file is a header and can be ignored.
 
 \section{Evaluation}
 \label{evaluation}
-\todo[inline]{write short desc of evaluation}
-\subsection{Generating the benchmarks}
-\todo[inline]{Do this!}
-\subsection{Finding Extensions using Aspartix}
+This section describes the empirical evaluation done for this project.
+The first section outlines how the set of benchmarks was obtained and selected.
+
+\subsection{Generating the Benchmarks}
+\label{gen_bench}
+The frameworks used for evaluation come from two sources. On one hand
+the frameworks used in the first ``International Competition on Computational
+Models of Argumentation'' (ICCMA'15) were used. On the other hand
+the program \texttt{AFBenchGen2} was used to generate artificial
+abstract argumentation frameworks.
+
+The ICCMA'15 dataset is divided into nine subsets, constructed from
+three different graph types. According to the competition homepage
+\footnote{\url{http://argumentationcompetition.org/2015/results.html}} those
+are:
+\begin{enumerate}
+  \item Graphs with many nodes and very large grounded instances\footnote{
+  Grounded instances are the biggest sets in the complete extensions. The complete
+  extensions were not defined in section~\ref{aadef}, because they do not appear
+  in \cite{linsbichler2015hidden}. An extension $S\in cf(F)$ is \emph{complete}, iff
+  $S_F^{+}\subseteq S$}.
+  \item Graphs which feature many complete/preferred/stable extensions.
+  \item Graphs which feature a rich structure of strongly connected components.
+\end{enumerate}
+For the first and third type of graphs the problems collected into groups
+containing problems of three diffident sizes: small, medium, and large. For the
+second type, only small and medium sized problems are available. Note that for
+the competition only complete, preferred, grounded, and stable semantics were
+used. First experiments with some frameworks from the small instances of the
+second type showed that for stage semantics output logs of unsuitable size were
+generated ($\geq$ 65GB in minutes).
+
+AFBenchGen2\footnote{Available at:
+\url{https://sourceforge.net/projects/afbenchgen/}} is tool to generate
+benchmark problems for abstract argumentation solvers \cite{afbenchgen2}. The
+program supports the creation of graphs with an arbitrary number of nodes $n$.
+Three modes can then be selected to generate the attack relation.
+
+\emph{Erdös-Rényi} graphs are generated by randomly deciding if an attack
+between two nodes is added. The probability to select an attack is an additional
+parameter given to the program (between 0 and 1).
+
+\emph{Watts-Strogatz} graphs are generated by first creating a ring of $n$
+arguments which are each connected to their $k$ nearest neighbors. $k$ is called
+the base degree and must satisfy $n \gg k \gg log(n) \gg 1$. Then the tool
+considers each argument and rewires each of its edges towards the not yet
+considered nodes. The probability that an argument is chosen is the parameter
+$\beta$ (again between 0 and 1).
+
+\emph{Barabasi-Albert} graphs are generated by iteratively adding new nodes and
+connecting them to the previous nodes by preferring already well connected
+components.
+
+Because Watts-Strogatz and Barabasi-Albert graphs would result in cycle free
+graphs, the generator takes as additional argument the probability (between 0
+and 1) that an argument is in at least one cycle.
+
+\todo[inline]{this is not done yet}
 
 \section{Conclusion}
 \label{conclusion}
