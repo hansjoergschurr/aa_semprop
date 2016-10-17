@@ -15,15 +15,20 @@ import Shelly
 
 import CallAnalyze
 
-data Flag = FApxDir String | FFramework String | FSemantics (Maybe String) | FTimelimit (Maybe String)
+data Flag = FApxDir String | FFramework String | FSemantics (Maybe String) |
+              FTimelimit (Maybe String) | FDeleteLogs | FProperties (Maybe String)
     deriving (Eq,Ord,Show)
 
 flags = [Option ['a'] [] (ReqArg FApxDir "APX_DIR")
             "Directory containing the Aspartix ASP encodings.",
           Option ['f'] [] (ReqArg FFramework "FRAMEWORK_DIR")
             "Directory containing the the argumentation frameworks in APX format.",
+          Option ['d'] [] (NoArg FDeleteLogs)
+            "Delete the clingo logs after analyzing them.",
           Option ['t'] [] (OptArg FTimelimit "TIMELIMIT")
             "Timelimit given to clingo. The default is 120 seconds. A timelimit of 0 deactivates the timelimiting.",
+          Option ['p'] [] (OptArg FProperties "PROPERTIES")
+            "Properties to generate as one letter codes.",
           Option ['s'] [] (OptArg FSemantics "SEMANTICS")
             "Comma seperated list of three letter names of the semantics to calculate."
           ]
@@ -50,6 +55,28 @@ getTimelimit [] = 120
 getTimelimit (FTimelimit (Just s):_) = fromMaybe 120 (readMaybe s)
 getTimelimit (FTimelimit Nothing:_) = 120
 getTimelimit (_:xs) = getTimelimit xs
+
+getDeleteLogs [] = False
+getDeleteLogs (FDeleteLogs:_) = True
+getDeleteLogs (_:xs) = getDeleteLogs xs
+
+-- Selectable properties support
+decodeProp 'a' = "Arguments"
+decodeProp 'e' = "Extensions"
+decodeProp 'd' = "Downwards Closed"
+decodeProp 't' = "Tight"
+decodeProp 'c' = "Conflict Sensitive"
+decodeProp 's' = "In Signatures Of"
+decodeProp 'r' = "Rejected Arguments"
+decodeProp 'i' = "Implicit Conflicts"
+decodeProp 'j' = "Implicit Conflicts not Rejected"
+
+defaultProp = "erij"
+
+getProperties [] = map decodeProp defaultProp
+getProperties (FProperties (Just s):_) = map decodeProp s
+getProperties (FProperties Nothing:_) = map decodeProp defaultProp
+getProperties (_:xs) = getProperties xs
 
 onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
@@ -88,6 +115,8 @@ main = do
           (Just framework, Just extensions) → do
             let semantics = getSemantics args
             let timelimit = getTimelimit args
+            let deleteExtensions = getDeleteLogs args
+            let props = getProperties args
             shelly $ verbosely $ errExit False $ do
               pwd >>= appendToPath
               echo $ T.append "Framwork path: " framework
@@ -97,7 +126,7 @@ main = do
               let output = fromText . T.pack $ head (argv++["output.csv"])
               frames ← findWhen (return.hasExt "apx") $ fromText framework
               let f = findExtensions timelimit $ semDir extensions
-              csvHeader output semantics
-              mapM_ (generateStatistics output semantics) $ f <$> frames
+              csvHeader props output semantics
+              mapM_ (generateStatistics props deleteExtensions output semantics) $ f <$> frames
           _ → onErr []
     (_,_,errs) → onErr errs

@@ -9,49 +9,39 @@ import Shelly
 analyze =
   command "analyze" ["-n"]
 
-analyzeFramework includeArguments (f,e) = sub $ silently $ do
+emptRes s = map (const s)
+
+analyzeFramework _ props (nargs, os) (_, Nothing) =  return (nargs, emptRes "NaN" props:os)
+analyzeFramework dl props (nargs, os) (f,Just e) = sub $ silently $ do
   echo $ T.concat ["Analyzing: ", f, ", ", e]
   out ← analyze ["-f", f, "-e", e]
-  code <- lastExitCode
+  code ← lastExitCode
+  when dl $ run_ "rm -f" [f]
   if code == 0 then do
     let dict = map (T.break (== '\t')) $ T.lines out
-    let props = ["Extensions", "Rejected Arguments", "Implicit Conflicts", "Implicit Conflicts not Rejected"]
-    let allProps = if includeArguments then "Arguments":props else props
-    return $ map (T.stripStart.fromJust.(`lookup` dict)) allProps
-  else if includeArguments then
-      return ["Err","Err", "Err","Err", "Err"]
-    else
-      return ["Err", "Err","Err", "Err"]
-
-nan :: Sh [T.Text]
-nan = return ["NaN", "NaN", "NaN", "NaN"]
-
-ana [] = Nothing
-ana ((_,Nothing):xs) = liftM2 (:) (Just nan) (ana xs)
-ana ((f,Just e):xs) = Just $ analyzeFramework True (f,e):ana' xs
-
-ana' [] = []
-ana' ((f, Just e):xs) = analyzeFramework False (f,e):ana' xs
-ana' ((_,Nothing):xs) = nan:ana' xs
+    let nargs' = "Arguments" `lookup` dict
+    return (nargs <|> nargs', map (T.stripStart.fromJust.(`lookup` dict)) props:os)
+  else
+    return (nargs, emptRes "Err" props:os)
 
 -- Writes the statistics for one framework
-generateStatistics ∷ Shelly.FilePath → [T.Text] → (T.Text → Sh (T.Text, Maybe T.Text))→ Sh ()
-generateStatistics outfile semantics extF = do
+generateStatistics ∷ [T.Text] → Bool → Shelly.FilePath → [T.Text] → (T.Text → Sh (T.Text, Maybe T.Text))→ Sh ()
+generateStatistics requestedProps deleteExtensions outfile semantics extF = do
   logs ← sequence $ extF <$> semantics
   let frame = fst $ head logs
-  case ana logs of
-    Just a -> do
-      stats ← sequence a
-      appendfile outfile $ T.intercalate "," (frame:concat stats)
+  anaRes ← foldM (analyzeFramework deleteExtensions requestedProps) (Nothing, []) logs
+  case anaRes of
+    (Just na, stats) → do
+      appendfile outfile $ T.intercalate "," (frame:na:(concat.reverse) stats)
       appendfile outfile "\n"
-    Nothing ->
+    (Nothing, _) →
       echo $ T.append "Skiped: " frame
 
 -- Generate the csv header
-csvHeader ∷ Shelly.FilePath → [T.Text] → Sh ()
-csvHeader outfile semantics = do
+csvHeader ∷ [T.Text] → Shelly.FilePath → [T.Text] → Sh ()
+csvHeader requestedProps outfile semantics = do
   let one = "frame"
   let two = "args"
-  let three = [T.append s pf | s <- semantics, pf <- ["_ext", "_rj", "_imp", "_impnrj"]]
+  let three = [T.concat [s," ",pf] | s ← semantics, pf ← requestedProps]
   appendfile outfile $ T.intercalate "," (one:two:three)
   appendfile outfile "\n"
