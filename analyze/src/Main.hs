@@ -14,7 +14,7 @@ data Flag = FTgf | FIccma | FNumeric | FFramework String | FExtensions String
 flags = [Option ['t'] [] (NoArg FTgf)
             "The framework is in Trivial Graph Format, instead of Aspartix Format.",
          Option ['c'] [] (NoArg FIccma)
-            "The Extensions are in ICCMA competiton format, instead of an output log of clasp.",
+            "The extensions are in ICCMA competiton format, instead of an output log of clasp.",
          Option ['n'] [] (NoArg FNumeric)
             "Output the number of elements instead of lists e.g. for implicit conflicts.",
          Option ['f'] [] (ReqArg FFramework "FILE")

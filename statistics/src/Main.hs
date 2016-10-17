@@ -23,9 +23,9 @@ flags = [Option ['a'] [] (ReqArg FApxDir "APX_DIR")
           Option ['f'] [] (ReqArg FFramework "FRAMEWORK_DIR")
             "Directory containing the the argumentation frameworks in APX format.",
           Option ['t'] [] (OptArg FTimelimit "TIMELIMIT")
-            "Timelimit given to clingo. Default is 120 seconds. A timelimit of 0 deactivates the timelimiting.",
+            "Timelimit given to clingo. The default is 120 seconds. A timelimit of 0 deactivates the timelimiting.",
           Option ['s'] [] (OptArg FSemantics "SEMANTICS")
-            "Comma seprerated list of three letter names of the semantics to calculate."
+            "Comma seperated list of three letter names of the semantics to calculate."
           ]
 
 header = "Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-tTIMELIMIT][-sSEMANTICS] [OUTPUTFILE]\n"
