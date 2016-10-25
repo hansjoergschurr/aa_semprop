@@ -51,6 +51,7 @@ srtt = uncurry srt
 closure = unionAll . S.map powerSet
 
 -- does some redundant checks
+-- TODO: this is unsound! ignore sets that are not subsets of the base sets
 isDownwardsClosed ∷ Extensions → Bool
 isDownwardsClosed (Extensions e) = searchSubsets (S.toAscList $ unionAll e, [])
   where
