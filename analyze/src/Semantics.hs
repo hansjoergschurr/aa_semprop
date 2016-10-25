@@ -8,6 +8,7 @@ import qualified Data.List as L
 import qualified Data.Map.Strict as M
 import Data.Maybe (mapMaybe)
 import Control.Applicative (liftA2)
+import Debug.Trace
 
 import qualified Data.ByteString.Lazy.Char8 as B
 
@@ -49,8 +50,17 @@ srtt = uncurry srt
 
 closure = unionAll . S.map powerSet
 
+-- does some redundant checks
 isDownwardsClosed ∷ Extensions → Bool
-isDownwardsClosed (Extensions e) =  e /= closure e
+isDownwardsClosed (Extensions e) = searchSubsets (S.toAscList $ unionAll e, [])
+  where
+    searchSubsets ([], set) = S.fromList set `S.member` e
+    searchSubsets (res, set)
+      | not $ S.fromList set `S.member` e = False
+      | otherwise = all searchSubsets $ gen res set
+        where
+          gen [] _ = []
+          gen (x:xs) set = (xs, x:set):gen xs set
 
 isTight ∷ Extensions → Bool
 isTight (Extensions e) = forAll noConflict e
@@ -171,7 +181,7 @@ outputSemanticProperties n f e = do
   outputLine "Downwards Closed" $ downwardsClosed sp
   outputLine "Tight" $ tight sp
   outputLine "Conflict Sensitive" $ conflictSensitive sp
-  outputLine "In Signatures Of" $ inSignatures sp
+  --outputLine "In Signatures Of" $ inSignatures sp
   outLists n sp
 
 outputLine ∷ PrettyOut a => String → a → IO  ()
