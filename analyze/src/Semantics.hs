@@ -24,31 +24,10 @@ unsortedPairs x = S.fromDistinctAscList [(x,y) | x←xs, y←xs, x < y]
   where
     xs = S.toAscList x
 
-slift ∷ (Ord a, Ord b, Ord c) ⇒ (a→b→c) → S.Set a → S.Set b → S.Set c
-slift f s0 s1 = unionAll (S.map (\e → S.map (f e) s1) s0)
-
-forAll ∷ (Ord a) ⇒ (a → Bool) → S.Set a → Bool
-forAll f = S.fold (\x b→b && f x) True
-
-exists ∷ (Ord a) ⇒ (a → Bool) → S.Set a → Bool
-exists f = S.fold (\x b→b || f x) False
-
--- {{}, {a}}
-makeSet :: (Ord a) ⇒ a → S.Set (S.Set a)
-makeSet = S.insert S.empty . S.singleton.S.singleton
-
-powerSet ∷ (Ord a) ⇒ S.Set a → S.Set (S.Set a)
-powerSet = S.fold (slift S.union) (S.singleton S.empty) . S.map makeSet
-
 srt ∷ Ord a ⇒ a → a → (a,a)
 srt a b
   | a>b = (b,a)
   | otherwise = (a,b)
-
-srtt ∷ Ord a ⇒ (a,a) → (a,a)
-srtt = uncurry srt
-
-closure = unionAll . S.map powerSet
 
 subsetOfAny :: Ord a => S.Set a -> S.Set (S.Set a) -> Bool
 subsetOfAny b = any (S.isSubsetOf b)
@@ -76,13 +55,16 @@ isDownwardsClosed (Extensions e) = searchSubsets (u, S.empty)
           ns = S.insert x set
 
 isTight ∷ Extensions → Bool
-isTight (Extensions e) = forAll noConflict e
+isTight = tightness S.member
+
+tightness ∷ (S.Set Argument -> S.Set (S.Set Argument) -> Bool) -> Extensions → Bool
+tightness test (Extensions e) = all noConflict e
   where
-    pairs = unionAll $ S.map unsortedPairs e
-    isConflict a = any (\s→S.notMember (srt s a) pairs)
-    checkConflict s a = S.insert a s  `S.member` e || isConflict a s
     args = unionAll e
-    noConflict s = forAll (checkConflict s) args
+    noConflict s = all (checkConflict s) args
+    checkConflict s a = S.insert a s `test` e || isConflict a s
+    isConflict a = any (\s→S.notMember (srt s a) pairs)
+    pairs = unionAll $ S.map unsortedPairs e
 
 collectImplicitConflicts ∷ Framework → Extensions → S.Set (Argument, Argument)
 collectImplicitConflicts (Framework args atcs) (Extensions exts) =
@@ -93,18 +75,18 @@ collectImplicitConflicts (Framework args atcs) (Extensions exts) =
     inExt = unionAll $ S.map unsortedPairs exts
 
 isIncomparable ∷ Extensions → Bool
-isIncomparable (Extensions e) = forAll compA e
+isIncomparable (Extensions e) = all compA e
   where
-    compA a = forAll (comp a) e
+    compA a = all (comp a) e
     comp a b = not (a `S.isSubsetOf` b || b `S.isSubsetOf` a)
 
 isConflictSensitive ∷ Extensions → Bool
-isConflictSensitive (Extensions e) = forAll (\a→forAll (cond a) e) e
+isConflictSensitive (Extensions e) = all (\a→all (cond a) e) e
     where
       pairs = unionAll $ S.map unsortedPairs e
       cond a b = (c `S.member` e) || conf c
         where c = a `S.union` b
-      conf c = exists (\a→exists (\b→srt a b `S.notMember` pairs) c) c
+      conf c = any (\a→any (\b→srt a b `S.notMember` pairs) c) c
 
 numArguments ∷ Framework → Int
 numArguments (Framework args _) = length args
@@ -169,7 +151,8 @@ semanticProperties f e = SemanticProperties {
   incomparable = isIncomparable e,
   downwardsClosed = isDownwardsClosed e,
   tight = isTight e,
-  closureIsTight = isTight $ (\(Extensions s) → Extensions (closure s)) e,
+  closureIsTight = tightness subsetOfAny e,
+    --isTight $ (\(Extensions s) → Extensions (closure s)) e,
   conflictSensitive = isConflictSensitive e}
 
 filterConflictByArguments ∷  S.Set Argument → S.Set (Argument, Argument) → S.Set (Argument, Argument)
