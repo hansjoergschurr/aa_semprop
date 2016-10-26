@@ -1,4 +1,4 @@
-module Semantics(outputSemanticProperties, sanityCheck) where
+module Semantics(outputSemanticProperties, isDownwardsClosed, sanityCheck) where
 
 import Extensions
 import Frameworks
@@ -50,18 +50,30 @@ srtt = uncurry srt
 
 closure = unionAll . S.map powerSet
 
--- does some redundant checks
--- TODO: this is unsound! ignore sets that are not subsets of the base sets
+subsetOfAny :: Ord a => S.Set a -> S.Set (S.Set a) -> Bool
+subsetOfAny b = any (S.isSubsetOf b)
+
+-- The subset-maximal sets.
+bases :: Ord a => S.Set (S.Set a) -> S.Set (S.Set a)
+bases = S.foldl' (\b s-> if s `subsetOfAny` b then b else S.insert s b) S.empty
+
 isDownwardsClosed ∷ Extensions → Bool
-isDownwardsClosed (Extensions e) = searchSubsets (S.toAscList $ unionAll e, [])
+isDownwardsClosed (Extensions e) = searchSubsets (u, S.empty)
   where
-    searchSubsets ([], set) = S.fromList set `S.member` e
+    b = bases e
+    u = S.toAscList $ unionAll b
+    -- Searches the subsets, starting with the unit sets.
+    -- If a subset is not a subset of any base, its supersets are skipped.
+    searchSubsets ([], set) = set `S.member` e
     searchSubsets (res, set)
-      | not $ S.fromList set `S.member` e = False
+      | not $ set `S.member` e = False
       | otherwise = all searchSubsets $ gen res set
+    gen [] _ = []
+    gen (x:xs) set
+      | ns `subsetOfAny` b = (xs, ns):gen xs set
+      | otherwise = gen xs set
         where
-          gen [] _ = []
-          gen (x:xs) set = (xs, x:set):gen xs set
+          ns = S.insert x set
 
 isTight ∷ Extensions → Bool
 isTight (Extensions e) = forAll noConflict e
