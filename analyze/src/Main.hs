@@ -8,13 +8,15 @@ import Frameworks
 import Extensions
 import Semantics
 
-data Flag = FTgf | FIccma | FNumeric | FFramework String | FExtensions String
+data Flag = FTgf | FIccma | FNumeric | FFramework String | FExtensions String | FProperties (Maybe String)
     deriving (Eq,Ord,Show)
 
 flags = [Option ['t'] [] (NoArg FTgf)
             "The framework is in Trivial Graph Format, instead of Aspartix Format.",
          Option ['c'] [] (NoArg FIccma)
             "The extensions are in ICCMA competiton format, instead of an output log of clasp.",
+         Option ['p'] [] (OptArg FProperties "PROPERTIES")
+            "Properties to generate as one letter codes.",
          Option ['n'] [] (NoArg FNumeric)
             "Output the number of elements instead of lists e.g. for implicit conflicts.",
          Option ['f'] [] (ReqArg FFramework "FILE")
@@ -22,7 +24,7 @@ flags = [Option ['t'] [] (NoArg FTgf)
          Option ['e'] [] (ReqArg FExtensions "FILE")
             "FILE containing the extensions."]
 
-header = "Usage: analyze [-t] [-c] [-n] -f FILE -e FILE\n"
+header = "Usage: analyze [-t] [-c] [-pPROPERTIES] [-n] -f FILE -e FILE\n"
 
 getFrameworkPath [] = Nothing
 getFrameworkPath (FFramework s:_) = Just s
@@ -31,6 +33,13 @@ getFrameworkPath (_:xs) = getFrameworkPath xs
 getExtensionsPath [] = Nothing
 getExtensionsPath (FExtensions s:_) = Just s
 getExtensionsPath (_:xs) = getExtensionsPath xs
+
+defaultProp = "aedtcsrij"
+
+getProperties [] = defaultProp
+getProperties (FProperties (Just s):_) =s
+getProperties (FProperties Nothing:_) = defaultProp
+getProperties (_:xs) = getProperties xs
 
 onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
@@ -52,6 +61,7 @@ main = do
             let numericOut = FNumeric `elem` args
             let fParser = if FTgf `elem` args then readTgf else readApx
             let eParser = if FIccma `elem` args then readIccma else readClasp
+            let props = getProperties args
 
             framework ← readFromFile framework fParser
             extensions ← readFromFile extensions eParser
@@ -60,6 +70,6 @@ main = do
               Just s → do
                 hPutStrLn stderr ("Error: "++s)
                 exitWith (ExitFailure 1)
-              Nothing → outputSemanticProperties numericOut framework extensions
+              Nothing → outputSemanticProperties props numericOut framework extensions
           _ → onErr []
     (_,_,errs) → onErr errs

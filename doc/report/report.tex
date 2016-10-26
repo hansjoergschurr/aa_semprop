@@ -234,6 +234,7 @@ Usage: analyze [-t] [-c] [-n] -f FILE -e FILE
     instead of an output log of clasp.
   -n         Output the number of elements instead of lists
     e.g. for implicit conflicts.
+  -p[PROPERTIES]      Properties to generate as one letter codes.
   -f FILE    FILE containing the framework.
   -e FILE    FILE containing the extensions.
 \end{verbatim}
@@ -295,11 +296,16 @@ incomparability, but does not output this property to the command line.
 Rejected Arguments and Implicit Conflicts were defined in
 \cite{linsbichler2015hidden}.
 
+The option \texttt{-p} can be used to restrict which properties are
+calculated. See the documentation of the \texttt{-p} option of the
+\texttt{statistics} tool in subsection~\ref{statistics}.
+
 Finally, the command line option \texttt{-n} results in \texttt{analyze}
 printing the number of Rejected Arguments, Implicit Conflicts, and Implicit
 Conflicts not Rejected, instead of lists.
 
 \subsection{Statistics}
+\label{statistics}
 
 The \texttt{analyze} program calculates some properties on a given framework and
 a set of its extensions. The \texttt{statistics} program takes a folder

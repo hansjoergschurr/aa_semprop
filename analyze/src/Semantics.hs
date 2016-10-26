@@ -6,6 +6,7 @@ import Frameworks
 import qualified Data.Set as S
 import qualified Data.List as L
 import qualified Data.Map.Strict as M
+import qualified Control.Monad as MO
 import Data.Maybe (mapMaybe)
 import Control.Applicative (liftA2)
 import Debug.Trace
@@ -159,26 +160,27 @@ filterConflictByArguments ∷  S.Set Argument → S.Set (Argument, Argument) →
 filterConflictByArguments c = S.filter f
   where f (a,b) = not (a `S.member` c || b `S.member` c)
 
-outLists False sp = do
-  outputLine "Rejected Arguments" $ rejectedArguments sp
-  outputLine "Implicit Conflicts" $ implicitConflicts sp
-  outputLine "Implicit Conflicts not Rejected" $
-    filterConflictByArguments (rejectedArguments sp) (implicitConflicts sp)
-outLists True sp = do
-  outputLine "Rejected Arguments" $ S.size (rejectedArguments sp)
-  outputLine "Implicit Conflicts" $ S.size (implicitConflicts sp)
-  outputLine "Implicit Conflicts not Rejected" $
-    S.size (filterConflictByArguments (rejectedArguments sp) (implicitConflicts sp))
+outLists useProps False sp = do
+  useProps 'r' (outputLine "Rejected Arguments" $ rejectedArguments sp)
+  useProps 'i' (outputLine "Implicit Conflicts" $ implicitConflicts sp)
+  useProps 'j' (outputLine "Implicit Conflicts not Rejected" $
+    filterConflictByArguments (rejectedArguments sp) (implicitConflicts sp))
+outLists useProps True sp = do
+  useProps 'r' (outputLine "Rejected Arguments" $ S.size (rejectedArguments sp))
+  useProps 'i' (outputLine "Implicit Conflicts" $ S.size (implicitConflicts sp))
+  useProps 'j' (outputLine "Implicit Conflicts not Rejected" $
+    S.size (filterConflictByArguments (rejectedArguments sp) (implicitConflicts sp)))
 
-outputSemanticProperties n f e = do
+outputSemanticProperties props n f e = do
   let sp = semanticProperties f e
-  outputLine "Arguments" $ arguments sp
-  outputLine "Extensions" $ extensions sp
-  outputLine "Downwards Closed" $ downwardsClosed sp
-  outputLine "Tight" $ tight sp
-  outputLine "Conflict Sensitive" $ conflictSensitive sp
-  outputLine "In Signatures Of" $ inSignatures sp
-  outLists n sp
+  let useProps e = MO.when (e `elem` props)
+  useProps 'a' (outputLine "Arguments" $ arguments sp)
+  useProps 'e' (outputLine "Extensions" $ extensions sp)
+  useProps 'd' (outputLine "Downwards Closed" $ downwardsClosed sp)
+  useProps 't' (outputLine "Tight" $ tight sp)
+  useProps 'c' (outputLine "Conflict Sensitive" $ conflictSensitive sp)
+  useProps 's' (outputLine "In Signatures Of" $ inSignatures sp)
+  outLists useProps n sp
 
 outputLine ∷ PrettyOut a => String → a → IO  ()
 outputLine m n = putStrLn $ m ++ "\t" ++ pretty n

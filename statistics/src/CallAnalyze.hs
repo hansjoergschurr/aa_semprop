@@ -11,10 +11,10 @@ analyze =
 
 emptRes s = map (const s)
 
-analyzeFramework _ props (nargs, os) (_, Nothing) =  return (nargs, emptRes "NaN" props:os)
-analyzeFramework dl props (nargs, os) (f,Just e) = sub $ silently $ do
+analyzeFramework _ (_, props) (nargs, os) (_, Nothing) =  return (nargs, emptRes "NaN" props:os)
+analyzeFramework dl (iProps, props) (nargs, os) (f,Just e) = sub $ silently $ do
   echo $ T.concat ["Analyzing: ", f, ", ", e]
-  out ← analyze ["-f", f, "-e", e]
+  out ← analyze ["-f", f, "-e", e, "-p", T.pack iProps]
   code ← lastExitCode
   when dl $ run_ "rm" ["-f", e]
   if code == 0 then do
@@ -25,7 +25,7 @@ analyzeFramework dl props (nargs, os) (f,Just e) = sub $ silently $ do
     return (nargs, emptRes "Err" props:os)
 
 -- Writes the statistics for one framework
-generateStatistics ∷ [T.Text] → Bool → Shelly.FilePath → [T.Text] → (T.Text → Sh (T.Text, Maybe T.Text))→ Sh ()
+generateStatistics ∷ (String, [T.Text]) → Bool → Shelly.FilePath → [T.Text] → (T.Text → Sh (T.Text, Maybe T.Text)) → Sh ()
 generateStatistics requestedProps deleteExtensions outfile semantics extF = do
   logs ← sequence $ extF <$> semantics
   let frame = fst $ head logs
@@ -38,8 +38,8 @@ generateStatistics requestedProps deleteExtensions outfile semantics extF = do
       echo $ T.append "Skiped: " frame
 
 -- Generate the csv header
-csvHeader ∷ [T.Text] → Shelly.FilePath → [T.Text] → Sh ()
-csvHeader requestedProps outfile semantics = do
+csvHeader ∷ (String, [T.Text]) → Shelly.FilePath → [T.Text] → Sh ()
+csvHeader (_, requestedProps) outfile semantics = do
   let one = "frame"
   let two = "args"
   let three = [T.concat [s," ",pf] | s ← semantics, pf ← requestedProps]

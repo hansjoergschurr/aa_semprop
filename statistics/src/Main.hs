@@ -33,7 +33,7 @@ flags = [Option ['a'] [] (ReqArg FApxDir "APX_DIR")
             "Comma seperated list of three letter names of the semantics to calculate."
           ]
 
-header = "Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-tTIMELIMIT][-sSEMANTICS] [OUTPUTFILE]\n"
+header = "Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-d] [-tTIMELIMIT] [-pPROPERTIES] [-sSEMANTICS] [OUTPUTFILE]\n"
 
 getFrameworkPath [] = Nothing
 getFrameworkPath (FFramework s:_) = Just $ T.pack s
@@ -73,9 +73,9 @@ decodeProp 'j' = "Implicit Conflicts not Rejected"
 
 defaultProp = "erij"
 
-getProperties [] = map decodeProp defaultProp
-getProperties (FProperties (Just s):_) = map decodeProp s
-getProperties (FProperties Nothing:_) = map decodeProp defaultProp
+getProperties [] = (defaultProp, map decodeProp defaultProp)
+getProperties (FProperties (Just s):_) = (s, map decodeProp s)
+getProperties (FProperties Nothing:_) = (defaultProp, map decodeProp defaultProp)
 getProperties (_:xs) = getProperties xs
 
 onErr e = do
