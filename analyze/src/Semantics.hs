@@ -177,7 +177,7 @@ outputSemanticProperties n f e = do
   outputLine "Downwards Closed" $ downwardsClosed sp
   outputLine "Tight" $ tight sp
   outputLine "Conflict Sensitive" $ conflictSensitive sp
-  --outputLine "In Signatures Of" $ inSignatures sp
+  outputLine "In Signatures Of" $ inSignatures sp
   outLists n sp
 
 outputLine ∷ PrettyOut a => String → a → IO  ()
