@@ -16,7 +16,7 @@ analyzeFramework dl props (nargs, os) (f,Just e) = sub $ silently $ do
   echo $ T.concat ["Analyzing: ", f, ", ", e]
   out ← analyze ["-f", f, "-e", e]
   code ← lastExitCode
-  when dl $ run_ "rm -f" [f]
+  when dl $ run_ "rm" ["-f", e]
   if code == 0 then do
     let dict = map (T.break (== '\t')) $ T.lines out
     let nargs' = "Arguments" `lookup` dict
