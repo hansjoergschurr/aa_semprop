@@ -14,7 +14,7 @@ emptRes s = map (const s)
 analyzeFramework _ (_, props) (nargs, os) (_, Nothing) =  return (nargs, emptRes "NaN" props:os)
 analyzeFramework dl (iProps, props) (nargs, os) (f,Just e) = sub $ silently $ do
   echo $ T.concat ["Analyzing: ", f, ", ", e]
-  out ← analyze ["-f", f, "-e", e, "-p", T.pack iProps]
+  out ← analyze ["-f", f, "-e", e, T.pack $ "-p" ++ 'a':iProps]
   code ← lastExitCode
   when dl $ run_ "rm" ["-f", e]
   if code == 0 then do
