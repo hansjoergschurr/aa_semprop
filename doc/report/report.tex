@@ -40,7 +40,7 @@ Section~\ref{problemdesc} outlines the concept of argumentation frameworks, and
 extensions. Subsequently the terms Rejected Arguments and Implicit Conflicts are
 defined.
 
-Section~\ref{tools} presents the two tool that were developed for this project.
+Section~\ref{tools} presents the two tools that were developed for this project.
 A detailed instruction on how to compile the programs, and their command line
 arguments is given.
 
@@ -54,8 +54,8 @@ Finally, section~\ref{conclusion} concludes this report with some final remarks.
 
 \subsection{Abstract Argumentation}
 \label{aadef}
-Abstract Argumentation were introduced by Dung in 1995 \cite{dung1995}. The
-definitions given here follows \cite{linsbichler2015hidden}.
+\emph{Abstract Argumentation Frameworks} were introduced by Dung in 1995 \cite{dung1995}. The
+definitions given here follow \cite{baumann2016}.
 
 First and foremost a countably infinite domain $\mathfrak{A}$ of arguments
 is assumed.
@@ -91,7 +91,7 @@ $a \in T$ is defended by $S$.
 \end{definition}
 
 The second central concept of Abstract Argumentation is the concept of
-a \emph{semantic}:
+ \emph{semantics}:
 \begin{definition}
 A \emph{semantic} is a mapping from a framework to a set $\sigma(A)$ of subsets
 $S$ of $A$.  $S$ then is usually called a ($\sigma$-)extension.
@@ -125,7 +125,7 @@ An argument is rejected, if it doesn't appear in any extension:
 
 \begin{definition}
 Let $F=(A,R)$ be an argumentation framework, $\sigma$ a semantic, and $a\in A$
-be an argument. $a$ is \emph{rejected} if $\nexists S\in\sigma(F): a\in S$.
+be an argument. $a$ is \emph{rejected} with respect to $\sigma$ if $\nexists S\in\sigma(F): a\in S$.
 \end{definition}
 
 A framework is \emph{compact} if no argument is rejected:
@@ -252,7 +252,7 @@ purpose of this option is to compute the extensions by using the
 Aspartix\footnote{See:
 \url{http://www.dbai.tuwien.ac.at/research/project/argumentation/systempage/}}
 framework of ASP programs. Alternatively the format used in the ICCMA'15
-competition can be used. The default options are more throughly tested then the
+competition can be used. The default options are more thoughly tested then the
 alternative options.
 
 Running \texttt{analyze} on an input framework $F=(A,R)$ together with a set of
@@ -294,7 +294,7 @@ defined in \cite{dunne2015characteristics}. Note that the properties
 computed by \texttt{analyze}. Furthermore the program tests for
 incomparability, but does not output this property to the command line.
 Rejected Arguments and Implicit Conflicts were defined in
-\cite{linsbichler2015hidden}.
+\cite{baumann2016}.
 
 The option \texttt{-p} can be used to restrict which properties are
 calculated. See the documentation of the \texttt{-p} option of the
@@ -326,8 +326,8 @@ Aspartix programs are provided in the \texttt{APX/} subdirectory.
 Executing \texttt{analyze} without any command line arguments results in a short
 description of its arguments.
 \begin{verbatim}
-Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-tTIMELIMIT][-sSEMANTICS]
-  [OUTPUTFILE]
+Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-d] [-tTIMELIMIT]
+  [-pPROPERTIES] [-sSEMANTICS] [OUTPUTFILE]
 
   -a APX_DIR          Directory containing the Aspartix ASP encodings.
   -f FRAMEWORK_DIR    Directory containing the the argumentation frameworks in
@@ -356,8 +356,6 @@ To restrict the time that \texttt{clingo} is allowed to use per call, the
 \texttt{clingo} can be disabled by \texttt{-t0}.
 If \texttt{clingo} times out for all requested semantics, the affected
 framework will be skipped entirely.
-
-The \texttt{p}
 
 Finally, the optional \texttt{-s} option allows the user to restrict the
 semantics used. The list can contain the following three letter names:
@@ -419,8 +417,8 @@ those are:
   \item Graphs with many nodes and very large grounded instances\footnote{
   Grounded instances are the biggest sets in the complete extensions. The complete
   extensions were not defined in section~\ref{aadef}, because they do not appear
-  in \cite{linsbichler2015hidden}. An extension $S\in cf(F)$ is \emph{complete}, iff
-  the set of arguments defended by $S$ is a subset of $S$.}.
+  in \cite{baumann2016}. An extension $S\in cf(F)$ is \emph{complete}, iff
+  the set $S$ is equal to the set of arguments defended by $S$.}.
   \item Graphs which feature many complete/preferred/stable extensions.
   \item Graphs which feature a rich structure of strongly connected components.
 \end{enumerate}
