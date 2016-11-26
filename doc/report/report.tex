@@ -336,15 +336,14 @@ Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-d] [-tTIMELIMIT]
   -t[TIMELIMIT]       Timelimit given to clingo. The default is 120 seconds.
     A timelimit of 0 deactivates the timelimiting.
   -p[PROPERTIES]      Properties to generate as one letter codes.
-  -s[SEMANTICS]       Comma seperated list of three letter names of the
-    semantics to calculate.
+  -s[SEMANTICS]       Comma seperated list of of the program files in the
+                      APX_DIR folder used to generate the extensions.
+                      Default: 'adm,stb,prf,stg,sem'.
 \end{verbatim}
 
 The \texttt{-a} command line option specifies the directory the Aspartix ASP
 programs are found in. Normally this would be the \texttt{APX\/} subdirectory.
-The following programs must be present in this folder: \texttt{adm.dl},
-\texttt{prefex\_gringo.lp}, \texttt{semi\_stable\_gringo.lp},
-\texttt{stable.dl}, \texttt{stage\_gringo.lp}.  The \texttt{-f} command line
+The \texttt{-f} command line
 option specifies the directory containing the frameworks in Aspartix format.
 This directory will be scanned recursively for files ending
 in \texttt{.apx}. The program will then create a new
@@ -357,12 +356,16 @@ To restrict the time that \texttt{clingo} is allowed to use per call, the
 If \texttt{clingo} times out for all requested semantics, the affected
 framework will be skipped entirely.
 
-Finally, the optional \texttt{-s} option allows the user to restrict the
-semantics used. The list can contain the following three letter names:
-\texttt{adm}, \texttt{stb}, \texttt{prf}, \texttt{stg}, \texttt{sem}. Note that
-the order in the output file will always be as given in this list, even when the
-names given to \texttt{-s} are in a different order. If a filename is given to
-\texttt{statistics} as \texttt{OUTPUTFIILE}, this name is used for the CSV file.
+Finally, the optional \texttt{-s} option allows the user to control the
+set of analyzed semantics by specifying the ASP programs used to calculate the extensions.
+The default list contains the following three letter names:
+\texttt{adm}, \texttt{stb}, \texttt{prf}, \texttt{stg}, \texttt{sem}.
+When using the ASP encodings provided with the default installation,
+the following programs are present in the \texttt{APX\/} folder: \texttt{adm.dl},
+\texttt{prefex\_gringo.lp}, \texttt{semi\_stable\_gringo.lp},
+\texttt{stable.dl}, \texttt{stage\_gringo.lp} and softlinks from the three letter
+names to this programs are set.
+If a filename is given to \texttt{statistics} as \texttt{OUTPUTFIILE}, this name is used for the CSV file.
 Otherwise it will be called \texttt{out.csv}.
 
 The \texttt{-p} option allows the user to overwrite the properties that

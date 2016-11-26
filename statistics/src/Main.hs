@@ -30,7 +30,8 @@ flags = [Option ['a'] [] (ReqArg FApxDir "APX_DIR")
           Option ['p'] [] (OptArg FProperties "PROPERTIES")
             "Properties to generate as one letter codes.",
           Option ['s'] [] (OptArg FSemantics "SEMANTICS")
-            "Comma seperated list of three letter names of the semantics to calculate."
+            (unlines ["Comma seperated list of of the program files in the APX_DIR folder used to generate the extensions.",
+            "Default: '" ++ T.unpack ( T.intercalate "," allSemantics) ++ "'."])
           ]
 
 header = "Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-d] [-tTIMELIMIT] [-pPROPERTIES] [-sSEMANTICS] [OUTPUTFILE]\n"
@@ -48,7 +49,7 @@ allSemantics = ["adm", "stb", "prf", "stg", "sem"] -- "nai",
 getSemantics [] = allSemantics
 getSemantics (FSemantics (Just []):_) = allSemantics
 getSemantics (FSemantics Nothing:_) = allSemantics
-getSemantics (FSemantics (Just s):_) = allSemantics `intersect` map T.strip (T.split (==',') $ T.pack s)
+getSemantics (FSemantics (Just s):_) = map T.strip (T.split (==',') $ T.pack s)
 getSemantics (_:xs) = getSemantics xs
 
 getTimelimit [] = 120
@@ -82,14 +83,7 @@ onErr e = do
   hPutStrLn stderr (concat e ++ usageInfo header flags)
   exitWith (ExitFailure 1)
 
-semDir dir sem = dir </> s sem
-  where
-    s ∷ T.Text → T.Text
-    s "adm" = "adm.dl"
-    s "stb" = "stable.dl"
-    s "prf" = "prefex_gringo.lp"
-    s "stg" = "stage_gringo.lp"
-    s "sem" = "semi_stable_gringo.lp"
+semDir dir sem = dir </> sem
 
 findExtensions ∷ Integer → (T.Text → Shelly.FilePath) → Shelly.FilePath → T.Text → Sh (T.Text, Maybe T.Text)
 findExtensions timelimit semDir frame sem = sub $ escaping False $ do
