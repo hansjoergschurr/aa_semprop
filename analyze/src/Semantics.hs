@@ -37,35 +37,47 @@ subsetOfAny b = any (S.isSubsetOf b)
 bases :: Ord a => S.Set (S.Set a) -> S.Set (S.Set a)
 bases = S.foldl' (\b s-> if s `subsetOfAny` b then b else S.insert s b) S.empty
 
+searchSubsets e b u test = searchSubsets' (u,S.empty)
+  where
+      -- Searches the subsets, starting with the unit sets.
+      -- If a subset is not a subset of any base, its supersets are skipped.
+      searchSubsets' ([], set) = test e set
+      searchSubsets' (res, set)
+        | not $ test e set = False
+        | otherwise = all searchSubsets' $ gen res set
+      gen [] _ = []
+      gen (x:xs) set
+        | ns `subsetOfAny` b = (xs, ns):gen xs set
+        | otherwise = gen xs set
+          where
+            ns = S.insert x set
+
 isDownwardsClosed ∷ Extensions → Bool
-isDownwardsClosed (Extensions e) = searchSubsets (u, S.empty)
+isDownwardsClosed (Extensions e) = searchSubsets e b u test
   where
     b = bases e
     u = S.toAscList $ unionAll b
-    -- Searches the subsets, starting with the unit sets.
-    -- If a subset is not a subset of any base, its supersets are skipped.
-    searchSubsets ([], set) = set `S.member` e
-    searchSubsets (res, set)
-      | not $ set `S.member` e = False
-      | otherwise = all searchSubsets $ gen res set
-    gen [] _ = []
-    gen (x:xs) set
-      | ns `subsetOfAny` b = (xs, ns):gen xs set
-      | otherwise = gen xs set
-        where
-          ns = S.insert x set
+    test = flip S.member
 
 isTight ∷ Extensions → Bool
-isTight = tightness S.member
-
-tightness ∷ (S.Set Argument -> S.Set (S.Set Argument) -> Bool) -> Extensions → Bool
-tightness test (Extensions e) = all noConflict e
+isTight (Extensions e) = all (noConflict S.member args pairs e) e
   where
     args = unionAll e
-    noConflict s = all (checkConflict s) args
-    checkConflict s a = S.insert a s `test` e || isConflict a s
-    isConflict a = any (\s→S.notMember (srt s a) pairs)
     pairs = unionAll $ S.map unsortedPairs e
+
+noConflict test args pairs extensions set = all (checkConflict set) args
+  where
+    checkConflict s a = S.insert a s `test` extensions || isConflict a s
+    isConflict a = any (\s→S.notMember (srt s a) pairs)
+
+theClosureIsTight :: Extensions -> Bool
+theClosureIsTight (Extensions e) = searchSubsets e b u test
+  where
+    args = unionAll b
+    pairs = unionAll $ S.map unsortedPairs e
+    test = noConflict subsetOfAny args pairs
+    b = bases e
+    u = S.toAscList args
 
 collectImplicitConflicts ∷ Framework → Extensions → S.Set (Argument, Argument)
 collectImplicitConflicts (Framework args atcs) (Extensions exts) =
@@ -152,7 +164,7 @@ semanticProperties f e = SemanticProperties {
   incomparable = isIncomparable e,
   downwardsClosed = isDownwardsClosed e,
   tight = isTight e,
-  closureIsTight = tightness subsetOfAny e,
+  closureIsTight = theClosureIsTight e,
     --isTight $ (\(Extensions s) → Extensions (closure s)) e,
   conflictSensitive = isConflictSensitive e}
 
