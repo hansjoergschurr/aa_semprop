@@ -7,7 +7,7 @@ import re
 from subprocess import PIPE, Popen, TimeoutExpired
 from collections import defaultdict
 
-parameters {
+parameters = {
     "ER_0.33": ["-type","ErdosRenyi", "-ER_probAttacks", "0.33"],
     "ER_0.5": ["-type","ErdosRenyi", "-ER_probAttacks", "0.5"],
     "ER_0.66": ["-type","ErdosRenyi", "-ER_probAttacks", "0.66"],
@@ -19,5 +19,10 @@ parameters {
     "BA_0.66": ["-type", "BarabasiAlbert", "-BA_WS_probCycles", "0.66"]
 }
 
+numArguments = 100
+numFramesPerParameter = 30
+
 if __name__ == "__main__":
-    pass
+    for p in parameters:
+        for n in range(1,numFramesPerParameter+1):
+            pass

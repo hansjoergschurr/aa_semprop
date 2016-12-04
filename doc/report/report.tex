@@ -252,7 +252,7 @@ purpose of this option is to compute the extensions by using the
 Aspartix\footnote{See:
 \url{http://www.dbai.tuwien.ac.at/research/project/argumentation/systempage/}}
 framework of ASP programs. Alternatively the format used in the ICCMA'15
-competition can be used. The default options are more thoughly tested then the
+competition can be used. The default options are more throughly tested then the
 alternative options.
 
 Running \texttt{analyze} on an input framework $F=(A,R)$ together with a set of
@@ -459,12 +459,46 @@ Because Watts-Strogatz and Barabasi-Albert graphs would result in cycle free
 graphs, the generator takes as additional argument the probability (between 0
 and 1) that an argument is in at least one cycle.
 
-\subsection{Performance Evaluation}
+\subsection{Feasibility Evaluation}
 The first experiment performed with the tools is an evaluation of their
-feasability for the intended purpose. To test this a subset of the
-ICCMA'15 dataset was used. The followin problem set were selected:
-\texttt{testset4_st_small, testset5_st_medium, testset7_scc_small,
-testset8_scc_medium}.
+feasibility for the intended purpose. To test this a subset of the
+ICCMA'15 dataset was used. The following problem set were selected:
+\texttt{testset4\_st\_small}, \texttt{testset5\_st\_medium},
+\texttt{testset7\_scc\_small}, \texttt{testset8\_scc\_medium}.
+Those sets include in total 97 problems.
+
+\texttt{statistics} was called, such that the Admissible, Stable, Preferred, and
+Semi-Stable extensions were calculated. The other parameters were set to their
+default value. This especially means that the default time limit of 120 seconds for
+\texttt{clingo} was used. Furthermore automatic deletion of the \texttt{clingo}
+logs was activated.
+
+The program finished without encountering any run time errors. For 35 problems
+\texttt{clingo} timed out at least once. This, however, is not surprising, since
+the problems are designed to test the capabilities of Abstract Argumentation
+reasoning systems. The soundness of the results could not be tested because there
+are no reference values available.
+
+Overall this suggests, that the tools can be used for the task they were
+developed for.
+
+\subsection{Finding Preferred/Semi-Stable Extensions which are not tight.}
+
+For any given semantic $\sigma$, let $\Sigma_\sigma$ be the signature of this
+semantic. The signature is the set of all extension sets $E$, such that there is a
+framework $F$ with $E=\sigma(F)$. No it holds, that $\Sigma_nai\subset
+\Sigma_stb\subset\Sigma_prf=\Sigma_sem$. In fact an extension set is in $\Sigma_stb$
+if it is incomparable and \emph{tight}, while for $\Sigma_prf$ and $\Sigma_sem$
+incomparability and conflict sensitivity is required.
+
+Now for a given set of preferred or semi-stable extensions \texttt{analyze} can be used
+to test if they are not tight. If the given extension set $E$ is not tight, there is
+no framework $F'$, such that $E=stb(F')$, or given an framework $F$ if $prf(F)$ (or $sem(F)$)
+is not tight, then there is no $F'$ such that $stb(F')=prf(F)$ (or $stb(F')=sem(F)$).
+
+To find such frameworks the tools developed in this project can be used. First an
+appropriate set of frameworks has to be generated, then using \texttt{statistics} the
+preferred/sem-stable can be calculated and tested for their tightness.
 
 \section{Conclusion}
 \label{conclusion}
