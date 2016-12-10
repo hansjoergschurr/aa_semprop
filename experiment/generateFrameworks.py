@@ -33,6 +33,6 @@ if __name__ == "__main__":
             os.makedirs(d)
         for n in range(1,numFramesPerParameter+1):
             print("{}/{}".format(n, numFramesPerParameter), end="\r")
-            with open(os.path.join(d, "{}_{}.lp".format(p,n)), 'w') as outfile:
+            with open(os.path.join(d, "{}_{}.apx".format(p,n)), 'w') as outfile:
                 cmd = ["java", "-jar", genJar, "-numargs", str(numArguments)] + v
                 call(cmd, stdout=outfile)
