@@ -20,7 +20,7 @@ parameters = {
 }
 
 numArguments = 50
-numFramesPerParameter = 150
+numFramesPerParameter = 40
 outDir = "out"
 genJar = "jAFBenchGen.jar"
 
