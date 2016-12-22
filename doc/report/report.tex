@@ -619,21 +619,19 @@ included in table~\ref{tbl_res}.
 
 \section{Conclusion}
 \label{conclusion}
-
 The two tools developed for this project are intended to be used together.
-While one tool does the actual work, the second tool automatizes the
-process of analyzing a collection of frameworks. This worked very well.
-Especially after adding a small script to automatically generate frameworks,
-it was quite easy to iterate over a number of experiments.
+While one tool does the actual work, the second tool automatizes the process of
+analyzing a collection of frameworks. This worked very well.  Especially after
+adding a small script to automatically generate frameworks, it was quite easy to
+iterate over a number of experiments.
 
-While Haskell is probably not the most obvious choice for this type of
-projects, it worked out quite well. Performance was not a problem and
-the expressiveness of the language resulted in a straightforward
-implementation for most semantic properties. \texttt{clasp} output
-was parsed with the help of some simple regular expressions.
-For further work, it might be interesting to use the C API
-\footnote{\url{https://potassco.org/clingo/c-api/current/}} of
-\texttt{clasp} directly.
+While Haskell is probably not the most obvious choice for this type of projects,
+it worked out quite well. Performance was not a problem and the expressiveness
+of the language resulted in a straightforward implementation for most semantic
+properties. \texttt{clasp} output was parsed with the help of some simple
+regular expressions.  For further work, it might be interesting to use the C API
+\footnote{\url{https://potassco.org/clingo/c-api/current/}} of \texttt{clasp}
+directly.
 
 \printbibliography
 \end{document}
