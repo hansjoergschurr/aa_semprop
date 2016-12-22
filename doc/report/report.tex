@@ -6,6 +6,8 @@
 \usepackage[backend=biber]{biblatex}
 \usepackage{hyperref}
 \usepackage{enumitem}
+\usepackage{rotating}
+\usepackage{multirow}
 
 % Math imports
 \usepackage{amsmath}
@@ -13,7 +15,6 @@
 \usepackage{amssymb}
 \usepackage{bussproofs}
 \usepackage{mathtools}
-\usepackage{rotating}
 
 \newtheorem{definition}{Definition}
 
@@ -31,11 +32,10 @@
 \section{Problem Description}
 \label{problemdesc}
 This report summarizes the result of project work done for the lecture
-``Abstract Argumentation'' at TU~Wien. The course was held by Uwe Egly,
-Thomas Linsbichler, and Stefan Woltran.
-The goal of the project
-was to empirically evaluate certain properties of the extensions of a set of
-argumentation frameworks.
+``Abstract Argumentation'' at TU~Wien. The course was held by Uwe Egly, Thomas
+Linsbichler, and Stefan Woltran.  A goal of the project was to empirically
+evaluate certain properties of the extensions for a set of argumentation
+frameworks.
 
 Section~\ref{problemdesc} outlines the concept of argumentation frameworks, and
 extensions. Subsequently the terms Rejected Arguments and Implicit Conflicts are
@@ -48,38 +48,37 @@ arguments is given.
 The subsequent section describes the empirical evaluation. First the set of
 frameworks is described.  Some frameworks were generated with the help of a
 benchmark generator, some were selected from the ICCMA'15 benchmark set.
-Secondly, the Aspartix framework, which was used to find the extensions is
-described. Then the results are presented.
+Secondly, two different experiments using those frameworks and their
+results are described.
 
 Finally, section~\ref{conclusion} concludes this report with some final remarks.
 
 \subsection{Abstract Argumentation}
 \label{aadef}
-\emph{Abstract Argumentation Frameworks} were introduced by Dung in 1995 \cite{dung1995}. The
-definitions given here follow \cite{baumann2016}.
+\emph{Abstract Argumentation Frameworks} were introduced by Dung in 1995
+\cite{dung1995}. The definitions given here follow \cite{baumann2016}.
 
-First and foremost a countably infinite domain $\mathfrak{A}$ of arguments
-is assumed.
+First and foremost, a countably infinite domain $\mathfrak{A}$ of arguments is
+assumed.
 
 \begin{definition}
-An \emph{Argumentation Framework}
-is a tuple $F = (A,R)$ where $A$ is a finite subset of $\mathfrak{A}$
-and $R \subseteq A\times A$.  $A$ is called the set of arguments and $R$ the
-attack relation.
+An \emph{Argumentation Framework} is a tuple $F = (A,R)$ where $A$ is a finite
+subset of $\mathfrak{A}$ and $R \subseteq A\times A$.  $A$ is called the set of
+arguments and $R$ the attack relation.
 \end{definition}
-An Argumentation Framework is essentially a directed graph.
+An argumentation framework is essentially a directed graph.
 
-For a framework $F = (B, S)$ the notation $A_F$ and $R_F$ is
-used to refer to $B$ and $S$. Furthermore, $S \rightarrowtail_F a$ denotes that
-there is an $s \in S$ such hat $(s, a) \in R_F$. $a \rightarrowtail_F S$ is
-defined equally. Intuitively, the elements of $A$ are arguments of some form.
-One example would be natural language sentences such as $a=$``I will eat ice
-cream, because the sun is shining.'', and $b=$``The foreacast predicts it will
-rain in 15 minutes.''. The second sentence would then attack the first one and
-therefore $b \rightarrowtail_F a$.
+For a framework $F = (B, S)$ the notation $A_F$ and $R_F$ is used to refer to
+$B$ and $S$. Furthermore, $S \rightarrowtail_F a$ denotes that there is an $s
+\in S$ such hat $(s, a) \in R_F$. $a \rightarrowtail_F S$ is defined equally.
+Intuitively, the elements of $A$ are arguments of some form.  One example would
+be natural language sentences such as $a=$``I will eat ice cream, because the
+sun is shining.'', and $b=$``The foreacast predicts it will rain in 15
+minutes.''. The second sentence would then attack the first one and therefore $b
+\rightarrowtail_F a$.
 \begin{definition}
-The \emph{range} $S_F^{+}$ of a set $S$ is the
-set $S \cup\{b\,|\,S \rightarrowtail_F b\}$
+The \emph{range} $S_F^{+}$ of a set $S$ is the set $S \cup\{b\,|\,S
+\rightarrowtail_F b\}$
 \end{definition}
 
 Now it can be defined what it means if an argument is said to be
@@ -87,8 +86,8 @@ Now it can be defined what it means if an argument is said to be
 \begin{definition}
 An argument $a$ is said to be \emph{defended} by a set $S$, if for every $b \in
 A_F$ where $b \rightarrowtail_F a$ there is a $c \in S$ such that $c
-\rightarrowtail_F b$. A set $T$ is said to be \emph{defended} by $S$ if every
-$a \in T$ is defended by $S$.
+\rightarrowtail_F b$. A set $T$ is said to be \emph{defended} by $S$ if every $a
+\in T$ is defended by $S$.
 \end{definition}
 
 The second central concept of Abstract Argumentation is the concept of
@@ -126,7 +125,8 @@ An argument is rejected, if it doesn't appear in any extension:
 
 \begin{definition}
 Let $F=(A,R)$ be an argumentation framework, $\sigma$ a semantic, and $a\in A$
-be an argument. $a$ is \emph{rejected} with respect to $\sigma$ if $\nexists S\in\sigma(F): a\in S$.
+be an argument. $a$ is \emph{rejected} with respect to $\sigma$ if $\nexists
+S\in\sigma(F): a\in S$.
 \end{definition}
 
 A framework is \emph{compact} if no argument is rejected:
@@ -142,9 +142,10 @@ are called \emph{conflicts}. They can either be \emph{explicit}, or
 \emph{implicit}:
 \begin{definition}
   Let $F=(A,R)$ be an argumentation framework, $\sigma$ be an arbitrary semantic
-  and $a, b\in A$ (possibly $a = b$). If $\nexists S \in \sigma(F): \{a,b\} \subseteq S$ then $a$ and
-  $b$ are in \emph{conflict}. If $(a, b) \in R$ or $(b, a)\in R$, then the
-  conflict is \emph{explicit}, otherwise the conflict is \emph{implicit}.
+  and $a, b\in A$ (possibly $a = b$). If $\nexists S \in \sigma(F): \{a,b\}
+  \subseteq S$ then $a$ and $b$ are in \emph{conflict}. If $(a, b) \in R$ or
+  $(b, a)\in R$, then the conflict is \emph{explicit}, otherwise the conflict is
+  \emph{implicit}.
 \end{definition}
 
 A framework containing no \emph{implicit conflicts} is called \emph{analytic}:
@@ -154,42 +155,39 @@ Given an argumentation framework $F=(A,R)$ and a semantic $\sigma$, $F$ is
 called \emph{analytic} if all conflicts of $F$ for $\sigma$ are explicit.
 \end{definition}
 
-Since conflicts involving an argument which is rejected are always
-implicit the (number of) conflicts which do not involve a rejected
-argument are of some interest and will subsequently be referred to as
-\emph{Implicit Conflicts not Rejected}.
+Since conflicts involving an argument which is rejected are always implicit the
+(number of) conflicts which do not involve a rejected argument are of some
+interest and will subsequently be referred to as \emph{Implicit Conflicts not
+Rejected}.
 
 \subsection{Empirical Evaluation}
-Since the tools developed for this project calculate properties of
-frameworks and extensions it is obvious, that an empirical evaluation
-makes sense. This evaluation serves two purposes: First, the stability
-and correctness of the tools are tested. Secondly, some insightful
-results might be obtained.
+Since the tools developed for this project calculate properties of frameworks
+and extensions it is obvious, that an empirical evaluation makes sense. This
+evaluation serves two purposes: First, the stability and correctness of the
+tools are tested. Secondly, some insightful results might be obtained.
 
-To test the tools a set of test frameworks is needed. The extensions
-can then be computed by using on of the tools available to compute
-the extensions from frameworks. In the case of this project it is
-the Aspartix framework, together with the \texttt{clasp} Answer Set
-Programing system.
+To test the tools a set of test frameworks is needed. The extensions can then be
+computed by using on of the tools available to compute the extensions from
+frameworks. In the case of this project it is the Aspartix framework, together
+with the \texttt{clasp} Answer Set Programming system.
 
-In 2015 the first ``International Competition on Computational
-Models of Argumentation''\footnote{see:
-\url{http://argumentationcompetition.org/2015/}} was held. The
-test set used to test the programs participating in this competition
-can be used to evaluate the tools developed for this project. Furthermore,
-the program \texttt{AFBenchGen2}\footnote{see \cite{afbenchgen2}} can be
- used to generate artificial Abstract Argumentation benchmarks.
+In 2015 the first International Competition on Computational Models of
+Argumentation\footnote{See: \url{http://argumentationcompetition.org/2015/}}
+was held. The test set used to test the programs participating in this
+competition can be used to evaluate the tools developed for this project.
+Furthermore, the program AFBenchGen2\footnote{See: \cite{afbenchgen2}}
+can be used to generate artificial Abstract Argumentation benchmarks.
 
 \section{The Tools}
 \label{tools}
-In this section the tools developed for this project are described. The
-first section gives detailed introduction how to compile them. Since the tools
-are developed in the Haskell programing language, an  appropriate
-build tool for Haskell is used.
+In this section the tools developed for this project are described. The first
+section gives detailed introduction how to compile them. Since the tools are
+developed in the Haskell programming language, an  appropriate build tool for
+Haskell is used.
 
 Then the subsequent chapter documents the \texttt{analyze} tool. This tool is
-used to investigate a given set of extensions together with a framework. It outputs
-a list of properties and offers a number of input formats.
+used to investigate a given set of extensions together with a framework. It
+outputs a list of properties and offers a number of input formats.
 
 \texttt{statistics} is the second tool described. Given a set of input
 frameworks it automatically calls a program to compute the extensions and
@@ -197,24 +195,23 @@ subsequently uses \texttt{analyze} to compute the properties of the extensions.
 
 \subsection{Building the Tools}
 Both tools are written in Haskell. While there are multiple ways to build the
-tools, using \emph{Stack}\footnote{\url{https://haskellstack.org}}
-is strongly suggested and documented here.
+tools, using \emph{Stack}\footnote{\url{https://haskellstack.org}} is strongly
+suggested and documented here.
 
-To install Stack follow the instructions on the Stack homepage.
-After the installation is complete, open a terminal and navigate to either
-\texttt{analyze/} or \texttt{statistics/}. Then run then following
-commands, where \texttt{\{tool\}} is either \texttt{analyze} or
-\texttt{statistics}:
+To install Stack follow the instructions on the Stack homepage.  After the
+installation is complete, open a terminal and navigate to either
+\texttt{analyze/} or \texttt{statistics/}. Then run then following commands,
+where \texttt{\{tool\}} is either \texttt{analyze} or \texttt{statistics}:
 \begin{verbatim}
 > stack setup
 > stack build
 > stack exec {tool}
 \end{verbatim}
 
-The \texttt{stack build} command outputs the path the resulting binary
-is placed in. On Linux calling \texttt{stack install} will copy the binary
-to \texttt{\~{}/.local/bin}. Alternatively the programs can be run with
-additional arguments (\texttt{\{args\}}) by calling
+The \texttt{stack build} command outputs the path the resulting binary is placed
+in. On Linux calling \texttt{stack install} will copy the binary to
+\texttt{\~{}/.local/bin}. Alternatively the programs can be run with additional
+arguments (\texttt{\{args\}}) by calling
 \begin{verbatim}
 stack exec {tool} -- {args}
 \end{verbatim}
@@ -222,9 +219,8 @@ stack exec {tool} -- {args}
 \subsection{Analyze}
 
 The \texttt{analyze} tool uses an argumentation framework and precomputed
-extensions and returns a list of properties. Executing \texttt{analyze}
-without any command line arguments results in a short description of
-its arguments.
+extensions and returns a list of properties. Executing \texttt{analyze} without
+any command line arguments results in a short description of its arguments.
 
 \begin{verbatim}
 Usage: analyze [-t] [-c] [-n] -f FILE -e FILE
@@ -246,8 +242,8 @@ Aspartix format, which describes the framework using ASP syntax\footnote{For
     more information on this and the other input formats see:
 \url{http://argumentationcompetition.org/2015/iccma15notes_v3.pdf}.}.
 Alternatively the Trivial Graph Format can be used. The \texttt{-c} option
-defaults to ``output log of \texttt{clasp}''. This means, that the input format is
-expected to be the result of running \texttt{clasp}\footnote{See:
+defaults to ``output log of \texttt{clasp}''. This means, that the input format
+is expected to be the result of running \texttt{clasp}\footnote{See:
 \url{https://www.cs.uni-potsdam.de/clasp/}} on the input framework. The intended
 purpose of this option is to compute the extensions by using the
 Aspartix\footnote{See:
@@ -289,17 +285,16 @@ extensions $\sigma(F)$ results in a list of properties:
       subsection~\ref{framework_props}.
 \end{itemize}
 
-The properties Downwards Closed, Tight, and Conflict Sensitive were
-defined in \cite{dunne2015characteristics}. Note that the properties
-\emph{com-closedness}, which is defined in this paper, is not
-computed by \texttt{analyze}. Furthermore the program tests for
-incomparability, but does not output this property to the command line.
-Rejected Arguments and Implicit Conflicts were defined in
+The properties Downwards Closed, Tight, and Conflict Sensitive were defined in
+\cite{dunne2015characteristics}. Note that the property \emph{com-closedness},
+which is defined in this paper, is not computed by \texttt{analyze}. Furthermore,
+the program tests for incomparability, but does not output this property to the
+command line.  Rejected Arguments and Implicit Conflicts were defined in
 \cite{baumann2016}.
 
-The option \texttt{-p} can be used to restrict which properties are
-calculated. See the documentation of the \texttt{-p} option of the
-\texttt{statistics} tool in subsection~\ref{statistics}.
+The option \texttt{-p} can be used to restrict which properties are calculated.
+See the documentation of the \texttt{-p} option of the \texttt{statistics} tool
+in subsection~\ref{statistics}.
 
 Finally, the command line option \texttt{-n} results in \texttt{analyze}
 printing the number of Rejected Arguments, Implicit Conflicts, and Implicit
@@ -316,13 +311,13 @@ the result. The properties are then written into a CSV file.
 While \texttt{statistics} is written in Haskell and compiles to a standalone
 executable, it assumes an Unix like environment and was only tested on Linux.
 Similar to shell scripts it does minimal error checking and might output
-somewhat convoluted error messages.
+somewhat convoluted error messages in case of failure.
 
 To calculate the extensions, the \emph{clasp} version of the Aspartix framework
 is used.  In fact, \texttt{statistics} calls the \texttt{clingo} program, which
-integrates the \texttt{gringo} grounder with the \texttt{clasp} solver. Therefore,
-\texttt{clingo} version 4.4.0 must be installed.  A copy of the relevant
-Aspartix programs are provided in the \texttt{APX/} subdirectory.
+integrates the \texttt{gringo} grounder with the \texttt{clasp} solver.
+Therefore, at least version 4.4.0 of \texttt{clingo} must be installed.  A copy of the
+relevant Aspartix programs are provided in the \texttt{APX/} subdirectory.
 
 Executing \texttt{analyze} without any command line arguments results in a short
 description of its arguments.
@@ -344,38 +339,34 @@ Usage: statistics -a APX_DIR -f FRAMEWORK_DIR [-d] [-tTIMELIMIT]
 
 The \texttt{-a} command line option specifies the directory the Aspartix ASP
 programs are found in. Normally this would be the \texttt{APX\/} subdirectory.
-The \texttt{-f} command line
-option specifies the directory containing the frameworks in Aspartix format.
-This directory will be scanned recursively for files ending
-in \texttt{.apx}. The program will then create a new
-dictionary, \texttt{out/}, where the \texttt{clingo} logs will be created.
-Since the logs are often quite big the \texttt{-d} option will instruct
-\texttt{statistics} to delete the logs right after they have been used.
-To restrict the time that \texttt{clingo} is allowed to use per call, the
-\texttt{-t} option can be used. The default is 120 seconds. Time-limiting
-\texttt{clingo} can be disabled by \texttt{-t0}.
-If \texttt{clingo} times out for all requested semantics, the affected
-framework will be skipped entirely.
+The \texttt{-f} command line option specifies the directory containing the
+frameworks in Aspartix format.  This directory will be scanned recursively for
+files ending in \texttt{.apx}. The program will then create a new dictionary,
+\texttt{out/}, where the \texttt{clingo} logs will be created.  Since the logs
+are often quite big the \texttt{-d} option will instruct \texttt{statistics} to
+delete the logs right after they have been used.  To restrict the time that
+\texttt{clingo} is allowed to use per call, the \texttt{-t} option can be used.
+The default is 120 seconds. Time-limiting \texttt{clingo} can be disabled by
+\texttt{-t0}.
 
-Finally, the optional \texttt{-s} option allows the user to control the
-set of analyzed semantics by specifying the ASP programs used to calculate the extensions.
-The default list contains the following three letter names:
-\texttt{adm}, \texttt{stb}, \texttt{prf}, \texttt{stg}, \texttt{sem}.
-When using the ASP encodings provided with the default installation,
-the following programs are present in the \texttt{APX\/} folder: \texttt{adm.dl},
+Finally, the optional \texttt{-s} option allows the user to control the set of
+analyzed semantics by specifying the ASP programs used to calculate the
+extensions.  The default list contains the following three letter names:
+\texttt{adm}, \texttt{stb}, \texttt{prf}, \texttt{stg}, \texttt{sem}.  When
+using the ASP encodings provided with the default installation, the following
+programs are present in the \texttt{APX\/} folder: \texttt{adm.dl},
 \texttt{prefex\_gringo.lp}, \texttt{semi\_stable\_gringo.lp},
-\texttt{stable.dl}, \texttt{stage\_gringo.lp} and soft links from the three letter
-names to this programs are set.
-If a filename is given to \texttt{statistics} as \texttt{OUTPUTFIILE}, this name is used for the CSV file.
+\texttt{stable.dl}, \texttt{stage\_gringo.lp} and soft links from the three
+letter names to this programs are set.  If a filename is given to
+\texttt{statistics} as \texttt{OUTPUTFIILE}, this name is used for the CSV file.
 Otherwise it will be called \texttt{out.csv}.
 
-The \texttt{-p} option allows the user to overwrite the properties that
-get written into the output file. To keep the command line short one
-letter codes are used.
-By default the following properties are used: The number
-of Extensions, the number of Rejected Arguments, the number of Implicit
-Conflicts, and the number of Implicit Conflicts not Rejected.
-The one letter codes are the following:
+The \texttt{-p} option allows the user to overwrite the properties that get
+written into the output file. To keep the command line short one letter codes
+are used.  By default the following properties are used: The number of
+Extensions, the number of Rejected Arguments, the number of Implicit Conflicts,
+and the number of Implicit Conflicts not Rejected.  The one letter codes are the
+following:
 \begin{itemize}
 	\item \texttt{'a' = "Arguments"}
 	\item \texttt{'e' = "Extensions"}
@@ -394,11 +385,12 @@ separated by the comma character (\texttt{,}). The file contains one row for
 every framework in the input directory and contains its name in the first
 column. The second column contains the number of arguments in the framework.
 Then the file contains columns for every property requested by the \texttt{-p}
-option. This is repeated for every semantic. The very first
-line of the CSV file is a header and can be ignored. If a \texttt{clingo} call
-times out, the affected values in the output file will replaced by the string
-\texttt{NaN}. In case of an \texttt{analyze} crash \texttt{statistics} will
-replace the values with \texttt{Err}.
+option. This is repeated for every semantic. The very first line of the CSV file
+is a header and can be ignored. If a \texttt{clingo} call times out, the
+affected values in the output file will replaced by the string \texttt{NaN}. In
+case of an \texttt{analyze} crash \texttt{statistics} will replace the values
+with \texttt{Err}. If \texttt{clingo} times out, or \texttt{analyze} crashes
+for all requested semantics, the affected framework will be skipped entirely.
 
 \section{Evaluation}
 \label{evaluation}
@@ -407,14 +399,14 @@ The first section outlines how the set of benchmarks was obtained and selected.
 
 \subsection{Generating the Benchmarks}
 \label{gen_bench}
-The frameworks used for evaluation come from two sources. On one hand,
-the frameworks used in the first ``International Competition on Computational
-Models of Argumentation'' (ICCMA'15) were used. On the other hand,
-the program \texttt{AFBenchGen2} was used to generate artificial
-abstract argumentation frameworks.
+The frameworks used for evaluation come from two sources. On one hand, the
+frameworks used in the first ``International Competition on Computational Models
+of Argumentation'' (ICCMA'15) were used. On the other hand, the program
+\texttt{AFBenchGen2} was used to generate artificial abstract argumentation
+frameworks.
 
-The ICCMA'15 dataset is divided into nine subsets, constructed from
-three different graph types. According to the competition
+The ICCMA'15 dataset is divided into nine subsets, constructed from three
+different graph types. According to the competition
 homepage\footnote{\url{http://argumentationcompetition.org/2015/results.html}}
 those are:
 \begin{enumerate}
@@ -438,8 +430,8 @@ AFBenchGen2\footnote{Available at:
 \url{https://sourceforge.net/projects/afbenchgen/}} is a tool to generate
 benchmark problems for abstract argumentation solvers\cite{afbenchgen2}. The
 program supports the creation of argumentation frameworks with an arbitrary
-number of arguments $n$. Three modes can then be selected to generate the
-attack relation.
+number of arguments $n$. Three modes can then be selected to generate the attack
+relation.
 
 \emph{Erdös-Rényi} graphs are generated by randomly deciding if an attack
 between two nodes is added. The probability to select an attack is an additional
@@ -462,50 +454,58 @@ and 1) that an argument is in at least one cycle.
 
 \subsection{Feasibility Evaluation}
 The first experiment performed with the tools is an evaluation of their
-feasibility for the intended purpose. To test this a subset of the
-ICCMA'15 dataset was used. The following problem set were selected:
+feasibility for the intended purpose. To test this a subset of the ICCMA'15
+dataset was used. The following problem set were selected:
 \texttt{testset4\_st\_small}, \texttt{testset5\_st\_medium},
-\texttt{testset7\_scc\_small}, \texttt{testset8\_scc\_medium}.
-Those sets include in total 97 problems.
+\texttt{testset7\_scc\_small}, \texttt{testset8\_scc\_medium}. Those sets
+include in total 97 problems.
 
 \texttt{statistics} was called, such that the Admissible, Stable, Preferred, and
 Semi-Stable extensions were calculated. The other parameters were set to their
-default value. This especially means that the default time limit of 120 seconds for
-\texttt{clingo} was used. Furthermore automatic deletion of the \texttt{clingo}
-logs was activated.
+default value. This especially means that the default time limit of 120 seconds
+for \texttt{clingo} was used. Furthermore automatic deletion of the
+\texttt{clingo} logs was activated.
 
 The program finished without encountering any run time errors. For 35 problems
 \texttt{clingo} timed out at least once. This, however, is not surprising, since
 the problems are designed to test the capabilities of Abstract Argumentation
-reasoning systems. The soundness of the results could not be tested because there
-are no reference values available.
+reasoning systems. The soundness of the results could not be tested because
+there are no reference values available.
 
 Overall this suggests, that the tools can be used for the tasks they were
 developed for.
 
-\subsection{Finding Preferred/Semi-Stable Extensions which are not tight.}
-
+\subsection{Non-Tight Preferred/Semi-Stable Extensions}
 For any given semantic $\sigma$, let $\Sigma_{\sigma}$ be the signature of this
-semantic. The signature is the set of all extension sets $E$, such that there is a
-framework $F$ with $E=\sigma(F)$. No it holds, that $\Sigma_{nai}\subset
-\Sigma_{stb}\subset\Sigma_{prf}=\Sigma_{sem}$. In fact an extension set is in $\Sigma_{stb}$
-if it is incomparable and \emph{tight}, while for $\Sigma_{prf}$ and $\Sigma_{sem}$
-incomparability and conflict sensitivity is required.
+semantic. The signature is the set of all extension sets $E$, such that there is
+a framework $F$ with $E=\sigma(F)$. Now it holds, that $\Sigma_{nai}\subset
+\Sigma_{stb}\subset\Sigma_{prf}=\Sigma_{sem}$. In fact an extension set is in
+$\Sigma_{stb}$ if it is incomparable and \emph{tight}, while for $\Sigma_{prf}$
+and $\Sigma_{sem}$ incomparability and conflict sensitivity is required.
 
-Now for a given set of preferred or semi-stable extensions \texttt{analyze} can be used
-to test if they are not tight. If the given extension set $E$ is not tight, there is
-no framework $F'$, such that $E=stb(F')$, or given an framework $F$ if $prf(F)$ (or $sem(F)$)
-is not tight, then there is no $F'$ such that $stb(F')=prf(F)$ (or $stb(F')=sem(F)$).
+For a given set of preferred or semi-stable extensions \texttt{analyze} can
+be used to test if they are not tight. If the given extension set $E$ is not
+tight, there is no framework $F'$, such that $E=stb(F')$, or given an framework
+$F$ if $prf(F)$ (or $sem(F)$) is not tight, then there is no $F'$ such that
+$stb(F')=prf(F)$ (or $stb(F')=sem(F)$).
 
-To find such frameworks the tools developed in this project can be used. First an
-appropriate set of frameworks has to be generated, then using \texttt{statistics} the
-preferred/sem-stable can be calculated and tested for their tightness. As described below,
-various experiments were conducted to explore the parameter space for the problem generator.
-An overview of the averaged results can be found in table~\ref{tbl_res}.
+To find such frameworks the tools developed in this project can be used. First
+an appropriate set of frameworks has to be generated. To generate the frameworks
+a Python script was used to automatically call AFBenchGen2 for a given
+set of parameter configurations. Then using \texttt{statistics} the
+preferred/sem-stable can be calculated and tested for their tightness. As
+described below, various experiments were conducted to explore the parameter
+space for the problem generator.
 
-For this experiment a Python script was used to generate a number of frameworks.
-As a first experiment a nine sets of parameters for the problem generator (see section~\ref{gen_bench})
-were defined:
+An overview of the averaged results can be found in table~\ref{tbl_res}. The
+list contains the parameters used for each experiment, and the number of arguments
+($n$). Subsequently for both semantics the table contains the percentage of
+non-tight extension sets (n.t.), and the average number of extensions (ext.),
+Rejected Arguments (rj.), Implicit Conflicts (i.c.), Implicit Conflicts not
+Rejected (icnr).
+
+As a first experiment a nine different configurations for the parameters of the
+problem generator (see section~\ref{gen_bench}) were defined:
 \begin{enumerate}
   \item ER\_0.33: Type: Erdös-Rényi; Attack probability: $p=0.33$
   \item ER\_0.5: Type: Erdös-Rényi; Attack probability: $p=0.5$
@@ -517,86 +517,101 @@ were defined:
   \item BA\_0.5: Type: Barabasi-Albert; Cycle probability: $p=0.5$
   \item BA\_0.66: Type: Barabasi-Albert; Cycle probability: $p=0.66$
 \end{enumerate}
-The \texttt{-numargs} parameter was set to $50$. This resulted of frameworks with
-$n=51$ arguments for the Erdös-Rényi and Barabasi-Albert types, and $n=50$ arguments for
-Watts-Strogatz frameworks. Then 40 problems were generated for each configuration.
+The \texttt{-numargs} parameter was set to $50$. This resulted of frameworks
+with $n=51$ arguments for the Erdös-Rényi and Barabasi-Albert types, and $n=50$
+arguments for Watts-Strogatz frameworks. Then 40 problems were generated for
+each configuration.
 
-Finally \texttt{statistics} was used to analyze the tightness of the preferred and
-semi-stable extensions of those frameworks.
+Unfortunately all of the extensions calculated in this first experiment were
+tight. For the Erdös-Rényi problems generated by the configurations ER\_0.33,
+ER\_0.5, and ER\_0.66 all but two problems had only one extension (for both
+semantics). The two exceptions had two extensions in each semantic. Since the
+Erdös-Rényi graphs are completely randomly generated, it might be hard for sets
+of arguments to defend themselves, which is a necessary requirement for sets of
+arguments to be a semi-stable or preferred extension.
 
-Unfortunately all of the calculated extensions were tight.
-For the Erdös-Rényi problems generated by the configurations ER\_0.33, ER\_0.5, and ER\_0.66
-all but two problems had only one extension (for both semantics).
-The two exceptions had two extensions in each semantic.
-Since the Erdös-Rényi graphs are completely randomly generated, it might be hard for sets of
-arguments to defend themselves, which is a necessary requirement for sets of arguments to
-be a semi-stable or preferred extension.
-Note that, that given a certain attack probability $p$, the average edge degree is
-$n\times p$. Since low edge degrees produced non-tight extensions in the case of Watt-Strogatz
-graphs, a second experiment was conducted with Erdös-Rényi. This time the
-attack probability was choose, such that the average edge degree was $2$
-($p=0.039$), $3$ ($p=0.059$), $4$ ($p=0.078$), and $5$ ($p=0.09$).
-Unfortunately the results were similar. All extensions were tight, and for all but 7 Frameworks
-only one extension per semantic was found. Of those exceptions 6 frameworks had two preferred and
-semi-stable extensions, and one had two preferred and one semi-stable extension.
-
-For the three Watts-Strogatz type configuration WS\_4\_0.33, WS\_10\_0.33, and WS\_30\_0.33 the
-situation was similar. None of the WS\_30\_0.33 problems had more then one extension and only
-one framework in WS\_10\_0.33 configuration had two extensions in either semantic.
-However, nine frameworks generated by WS\_4\_0.33 had more then one extension.
-Therefore Watts-Strogatz frameworks
-with a low initial edge degree $k$ were explored as a second experiment. This experiment consisted
-of frameworks of the Watts-Strogatz type with a base degree of four. For each possible $\beta$
-and cycle probability of either 0.33, 0.5, or 0.66, 190 problems ($n=50$) were generated and tested.
-Now some problems with non-tight preferred extensions could be found, however no non-tight semi-stable
-extensions were found. For a $\beta$ of 0.33 and a cycle probability of 0.66, four problems
-had preferred extensions that were not tight. Two problems with $\beta$: 0.5 and cycle prob.: 0.66
-had problems with non-tight preferred extensions and the following configurations had one such
-problem each: $\beta$: 0.66 and cycle prob.: 0.66, $\beta$: 0.33 and cycle prob.: 0.5.
-Note that all problems had a cycle probability of at least 50\%.
-
-%To futher investigate the effect of the base degree and the $\beta$ factor in Watts-Strogatz
-%frameworks another experiment was conducted. This time the cycle propability was fixed to
-%$0.66$ and frameworks for base degree $2$, $4$, $6$ and $\beta$ values $0.1$, $0.33$ and $0.66$
-%were generated.
-% Note: WS mit deg 4 und cycle prop 0.66 erzeugt viiiieeeele extensions
+For the three Watts-Strogatz type configuration WS\_4\_0.33, WS\_10\_0.33, and
+WS\_30\_0.33 the situation was similar. None of the WS\_30\_0.33 problems had
+more then one extension and only one framework in the WS\_10\_0.33 configuration
+had two extensions in either semantic.  However, nine frameworks generated by
+WS\_4\_0.33 had more then one extension.
 
 The three Barabasi-Albert configurations all produced numerous extensions, but
-all of the extension sets were tight. Unfortunately the documentation of the Barabasi-Albert
-framework type is not entirely clear and since there is only one parameter which produced
-no non-tight extensions on three quite different settings, no further experiments with
-Barabasi-Alber type graphs were conducted.
+all of the extension sets were tight. Unfortunately the documentation of the
+Barabasi-Albert framework type is not entirely clear to the author and since
+there is only one parameter which produced no non-tight extensions on three
+quite different settings, no further experiments with Barabasi-Alber type
+graphs were conducted.
 
-\begin{sidewaystable}
-\begin{tabular}[h]{|c|r|l|l|l|l|r|r|r|r|l|r|r|r|r|} % 16
+After this first round of experiments a few more experiments were conducted.
+Note that in the case of Erdös-Rényi graphs, given a certain attack probability
+$p$, the average edge degree is $n\times p$. Since low edge degrees produced
+non-tight extensions in the case of Watt-Strogatz graphs, for the second
+experiment Erdös-Rényi graphs $p$ was chosen, such that the the resulting graphs
+have a low expected edge degree. This time the attack probability was choose,
+such that the average edge degree was $2$ ($p=0.039$), $3$ ($p=0.059$), $4$
+($p=0.078$), and $5$ ($p=0.09$).  Unfortunately the results were similar. All
+extensions were tight, and for all but 7 frameworks only one extension per
+semantic was found. Of those exceptions 6 frameworks had two preferred and
+semi-stable extensions, and one had two preferred and one semi-stable extension.
+
+Similar, Watts-Strogatz frameworks with a low initial edge degree $k$ were
+explored next.  This experiment consisted of frameworks of the Watts-Strogatz
+type with a base degree of four.  For each possible $\beta$ and cycle
+probability of either 0.33, 0.5, or 0.66, 190 problems ($n=50$) were generated
+and tested. Now some problems with non-tight preferred extensions could be
+found, however no non-tight semi-stable extensions were found. For a $\beta$ of
+0.33 and a cycle probability of 0.66, four problems had preferred extensions
+that were not tight. Two problems with $\beta$: 0.5 and cycle prob.: 0.66 had
+problems with non-tight preferred extensions and the following configurations
+had one such problem each: $\beta$: 0.66 and cycle prob.: 0.66, $\beta$: 0.33
+and cycle prob.: 0.5.  Note that all problems had a cycle probability of at
+least 50\%.
+
+A further experiment with Watts-Strogatz frameworks with base degree
+of $2$, a $\beta$ of 0.66, and a cycle probability of 0.66 was conducted too.
+While 190 such problems were generated, the resulting frameworks induced a
+high number of extensions and therefore resulted in a long processing time.
+The experiment was aborted after 132 analyzed frameworks.
+All of those 132 frameworks had tight extension sets. The results are
+included in table~\ref{tbl_res}.
+
+\begin{sidewaystable}[h!]
+\begin{tabular}[h]{|c|c|r|l|l|l|l|r|r|r|r|l|r|r|r|r|} % 16
+\cline{2-16}
+\multicolumn{1}{c|}{} & \multicolumn{5}{|c|}{Parameters} & \multicolumn{5}{|c|}{Preferred} & \multicolumn{5}{|c|}{Semi-stable} \\
+\cline{2-16}
+\multicolumn{1}{c|}{} & Type & $k$ & $\beta$ & $p$ & $n$ & n.t. & ext. & rj. & i.c. & icnr & n.t. & ext. & rj. & i.c. & icnr \\
 \hline
-\multicolumn{5}{|c|}{Parameters} & \multicolumn{5}{|c|}{Preferred} & \multicolumn{5}{|c|}{Semi-stable} \\
+\multirow{9}{*}{\begin{sideways} Experiment 1~ \end{sideways}}
+& ER & \multicolumn{2}{|c|}{} & 0.33 & 51 & 0.0\% & 1.03 & 47.75 & 841.20 & 0.10 & 0.0\%  & 1.03 & 47.75 & 841.20 & 0.10\\
+& ER & \multicolumn{2}{|c|}{} & 0.5 & 51 & 0.0\% & 1.00 & 49.68 & 636.63 & 0.00 & 0.0\%  & 1.00 & 49.68 & 636.63 & 0.00\\
+& ER & \multicolumn{2}{|c|}{} & 0.66 & 51 & 0.0\% & 1.03 & 50.45 & 429.70 & 0.08 & 0.0\%  & 1.03 & 50.45 & 429.70 & 0.08\\
+\cline{2-16}
+& WS & 4 & 0.33 & 0.33 & 50 &  0.0\% & 1.16 & 35.09 & 1012.95 & 3.71 & 0.0\% & 1.09 & 35.37 & 1015.82 & 2.16\\
+& WS & 10 & 0.33 & 0.33 & 50 & 0.0\% & 1.03 & 47.53 & 963.60 & 0.03 & 0.0\%  & 1.03 & 47.53 & 963.60 & 0.03\\
+& WS & 30 & 0.33 & 0.33 & 50 & 0.0\% & 1.00 & 49.85 & 474.63 & 0.00 & 0.0\%  & 1.00 & 49.85 & 474.63 & 0.00\\
+\cline{2-16}
+& BA & \multicolumn{2}{|c|}{} & 0.5  & 51 & 0.0\% & 161.25 & 7.90  & 335.65 & 3.03 & 0.0\%  & 161.25 &  7.90 & 335.65 & 3.03\\
+& BA & \multicolumn{2}{|c|}{} & 0.33 & 51 & 0.0\% &  37.45 & 10.38 & 429.68 & 2.15 & 0.0\%  &  37.45 & 10.38 & 429.68 & 2.15\\
+& BA & \multicolumn{2}{|c|}{} & 0.66 & 51 & 0.0\% & 584.75 & 4.78  & 207.65 & 3.40 & 0.0\%  & 584.75 &  4.78 & 207.65 & 3.40\\
 \hline
-Type & $k$ & $\beta$ & $p$ & $n$ & n.t. & ext. & rj. & i.c. & icnr & n.t. & ext. & rj. & i.c. & icnr \\
 \hline
-ER & \multicolumn{2}{|c|}{dg.: 2} & 0.04 & 51 & 0.0\% & 1.00 & 22.48 & 828.85 & 0.00 & 0.0\%  & 1.00 & 22.48 & 828.85 & 0.00\\
-ER & \multicolumn{2}{|c|}{dg.: 3} & 0.06 & 51 & 0.0\% & 1.05 & 26.98 & 919.48 & 0.25 & 0.0\%  & 1.05 & 26.98 & 919.48 & 0.25\\
-ER & \multicolumn{2}{|c|}{dg.: 4} & 0.08 & 51 & 0.0\% & 1.05 & 31.50 & 980.88 & 2.30 & 0.0\%  & 1.05 & 31.50 & 980.88 & 2.30\\
-ER & \multicolumn{2}{|c|}{dg.: 5} & 0.09 & 51 & 0.0\% & 1.07 & 33.17 & 992.88 & 1.62 & 0.0\%  & 1.05 & 33.27 & 994.42 & 1.48\\
-ER & \multicolumn{2}{|c|}{} & 0.33 & 51 & 0.0\% & 1.03 & 47.75 & 841.20 & 0.10 & 0.0\%  & 1.03 & 47.75 & 841.20 & 0.10\\
-ER & \multicolumn{2}{|c|}{} & 0.5 & 51 & 0.0\% & 1.00 & 49.68 & 636.63 & 0.00 & 0.0\%  & 1.00 & 49.68 & 636.63 & 0.00\\
-ER & \multicolumn{2}{|c|}{} & 0.66 & 51 & 0.0\% & 1.03 & 50.45 & 429.70 & 0.08 & 0.0\%  & 1.03 & 50.45 & 429.70 & 0.08\\
-\hline
-WS & 4 & 0.33 & 0.33 & 50 &  0.0\% & 1.16 & 35.09 & 1012.95 & 3.71 & 0.0\% & 1.09 & 35.37 & 1015.82 & 2.16\\
-WS & 4 & 0.50 & 0.33 & 50 &  0.0\% & 1.24 & 33.18 & 982.07 & 4.54 & 0.0\%  & 1.22 & 33.26 & 983.09 & 3.89\\
-WS & 4 & 0.66 & 0.33 & 50 &  0.0\% & 1.16 & 32.22 & 967.98 & 4.35 & 0.0\%  & 1.13 & 32.38 & 970.04 & 3.36\\
-WS & 4 & 0.33 & 0.50 & 50 & 0.53\% & 1.38 & 34.62 & 1004.13 & 3.09 & 0.0\% & 1.28 & 34.85 & 1007.04 & 1.85\\
-WS & 4 & 0.50 & 0.50 & 50 &  0.0\% & 1.33 & 33.10 & 981.61 & 5.03 & 0.0\%  & 1.25 & 33.45 & 985.41 & 2.78\\
-WS & 4 & 0.66 & 0.50 & 50 &  0.0\% & 1.39 & 31.28 & 954.02 & 4.06 & 0.0\%  & 1.38 & 31.30 & 954.26 & 3.99\\
-WS & 4 & 0.33 & 0.66 & 50 & 1.58\% & 2.48 & 33.41 & 985.16 & 6.77 & 0.0\%  & 2.10 & 33.85 & 990.53 & 4.82\\
-WS & 4 & 0.50 & 0.66 & 50 & 1.05\% & 2.46 & 30.49 & 940.65 & 10.48 & 0.0\% & 2.27 & 30.92 & 946.19 & 7.44\\
-WS & 4 & 0.66 & 0.66 & 50 & 0.53\% & 2.79 & 29.81 & 926.79 & 9.41 & 0.0\%  & 2.68 & 29.97 & 928.87 & 8.11\\
-WS & 10 & 0.33 & 0.33 & 50 & 0.0\% & 1.03 & 47.53 & 963.60 & 0.03 & 0.0\%  & 1.03 & 47.53 & 963.60 & 0.03\\
-WS & 30 & 0.33 & 0.33 & 50 & 0.0\% & 1.00 & 49.85 & 474.63 & 0.00 & 0.0\%  & 1.00 & 49.85 & 474.63 & 0.00\\
-\hline
-BA & \multicolumn{2}{|c|}{} & 0.5  & 51 & 0.0\% & 161.25 & 7.90  & 335.65 & 3.03 & 0.0\%  & 161.25 &  7.90 & 335.65 & 3.03\\
-BA & \multicolumn{2}{|c|}{} & 0.33 & 51 & 0.0\% &  37.45 & 10.38 & 429.68 & 2.15 & 0.0\%  &  37.45 & 10.38 & 429.68 & 2.15\\
-BA & \multicolumn{2}{|c|}{} & 0.66 & 51 & 0.0\% & 584.75 & 4.78  & 207.65 & 3.40 & 0.0\%  & 584.75 &  4.78 & 207.65 & 3.40\\
+\multirow{13}{*}{\begin{sideways} Experiment 2~ \end{sideways}}
+& ER & \multicolumn{2}{|c|}{dg.: 2} & 0.04 & 51 & 0.0\% & 1.00 & 22.48 & 828.85 & 0.00 & 0.0\%  & 1.00 & 22.48 & 828.85 & 0.00\\
+& ER & \multicolumn{2}{|c|}{dg.: 3} & 0.06 & 51 & 0.0\% & 1.05 & 26.98 & 919.48 & 0.25 & 0.0\%  & 1.05 & 26.98 & 919.48 & 0.25\\
+& ER & \multicolumn{2}{|c|}{dg.: 4} & 0.08 & 51 & 0.0\% & 1.05 & 31.50 & 980.88 & 2.30 & 0.0\%  & 1.05 & 31.50 & 980.88 & 2.30\\
+& ER & \multicolumn{2}{|c|}{dg.: 5} & 0.09 & 51 & 0.0\% & 1.07 & 33.17 & 992.88 & 1.62 & 0.0\%  & 1.05 & 33.27 & 994.42 & 1.48\\
+\cline{2-16}
+& WS & 2 & 0.66 & 0.66 & 50 &  0.0\% & 7428.30 & 4.47 & 206.71 & 9.19 & 0.0\%  & 8157.68 & 4.40 & 203.78 & 9.19\\
+& WS & 4 & 0.50 & 0.33 & 50 &  0.0\% & 1.24 & 33.18 & 982.07 & 4.54 & 0.0\%  & 1.22 & 33.26 & 983.09 & 3.89\\
+& WS & 4 & 0.66 & 0.33 & 50 &  0.0\% & 1.16 & 32.22 & 967.98 & 4.35 & 0.0\%  & 1.13 & 32.38 & 970.04 & 3.36\\
+& WS & 4 & 0.33 & 0.50 & 50 & 0.53\% & 1.38 & 34.62 & 1004.13 & 3.09 & 0.0\% & 1.28 & 34.85 & 1007.04 & 1.85\\
+& WS & 4 & 0.50 & 0.50 & 50 &  0.0\% & 1.33 & 33.10 & 981.61 & 5.03 & 0.0\%  & 1.25 & 33.45 & 985.41 & 2.78\\
+& WS & 4 & 0.66 & 0.50 & 50 &  0.0\% & 1.39 & 31.28 & 954.02 & 4.06 & 0.0\%  & 1.38 & 31.30 & 954.26 & 3.99\\
+& WS & 4 & 0.33 & 0.66 & 50 & 1.58\% & 2.48 & 33.41 & 985.16 & 6.77 & 0.0\%  & 2.10 & 33.85 & 990.53 & 4.82\\
+& WS & 4 & 0.50 & 0.66 & 50 & 1.05\% & 2.46 & 30.49 & 940.65 & 10.48 & 0.0\% & 2.27 & 30.92 & 946.19 & 7.44\\
+& WS & 4 & 0.66 & 0.66 & 50 & 0.53\% & 2.79 & 29.81 & 926.79 & 9.41 & 0.0\%  & 2.68 & 29.97 & 928.87 & 8.11\\
 \hline
 \end{tabular}
 \caption{\label{tbl_res}Experiment results.}
@@ -604,7 +619,21 @@ BA & \multicolumn{2}{|c|}{} & 0.66 & 51 & 0.0\% & 584.75 & 4.78  & 207.65 & 3.40
 
 \section{Conclusion}
 \label{conclusion}
-\todo[inline]{write}
+
+The two tools developed for this project are intended to be used together.
+While one tool does the actual work, the second tool automatizes the
+process of analyzing a collection of frameworks. This worked very well.
+Especially after adding a small script to automatically generate frameworks,
+it was quite easy to iterate over a number of experiments.
+
+While Haskell is probably not the most obvious choice for this type of
+projects, it worked out quite well. Performance was not a problem and
+the expressiveness of the language resulted in a straightforward
+implementation for most semantic properties. \texttt{clasp} output
+was parsed with the help of some simple regular expressions.
+For further work, it might be interesting to use the C API
+\footnote{\url{https://potassco.org/clingo/c-api/current/}} of
+\texttt{clasp} directly.
 
 \printbibliography
 \end{document}
