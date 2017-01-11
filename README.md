@@ -21,13 +21,13 @@ should be saved into the `statistics/APX` directory and appropriate soft
 links can be added to simplify usage. During development they were set up as
 follow:
 
-  * adm.dl
-  * prefex_gringo.lp
-  * semi_stable_gringo.lp
-  * stable.dl
-  * stage_gringo.lp
-  * adm -> adm.dl
-  * prf -> prefex_gringo.lp
-  * sem -> semi_stable_gringo.lp
-  * stb -> stable.dl
-  * stg -> stage_gringo.lp
+* adm.dl
+* prefex_gringo.lp
+* semi_stable_gringo.lp
+* stable.dl
+* stage_gringo.lp
+* adm -> adm.dl
+* prf -> prefex_gringo.lp
+* sem -> semi_stable_gringo.lp
+* stb -> stable.dl
+* stg -> stage_gringo.lp
