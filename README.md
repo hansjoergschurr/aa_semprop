@@ -8,7 +8,7 @@ empirically evaluate certain properties of the extensions for a set of
 argumentation frameworks.
 
 The tools are written in Haskell and can be compiled with Stack. Furthermore,
-the clasp Answer Set Solver is required.  See the `report.tex` file for an
+the clasp Answer Set Solver is required.  See the `doc/report/report.tex` file for an
 extensive documentation.
 
 Installing the ASPARTIX framework
@@ -19,7 +19,7 @@ work correctly. They can be downloaded from
 [the ASPARTIX page](http://www.dbai.tuwien.ac.at/research/project/argumentation/systempage/) and
 should be saved into the `statistics/APX` directory and appropriate soft
 links can be added to simplify usage. During development they were set up as
-follow:
+follows:
 
 * adm.dl
 * prefex_gringo.lp
